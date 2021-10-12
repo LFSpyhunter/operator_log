@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style type="text/css">
+  .container {
+      width: 1366px;
+  }
+
+  table,
+  td,
+  tr {
+      border: 1px solid #000;
+  }
+
+  .table_oper_log {
+      margin-top: 40px;
+      font-size: 12px;
+      width: 100%;
+  }
+
+  .table_oper_log input[type="text"],
+  input[type="time"],
+  textarea {
+      width: 100%;
+      border: none;
+  }
+</style>
+<div class="container">
+  <h1 style="text-align: center; font-size: 42px; margin-top: 30px;"> Журнал операторов IT отдела</h1>
+  <table class="table_oper_log">
+    <tr style="text-align: center;">
+      <td width="9%">Время события</td>
+      <td>Событие</td>
+      <td width="5%">Кому доложил</td>
+      <td width="2%">Время восстан.</td>
+      <td>Пояснение события</td>
+      <!-- <td width="5%">Статус</td> -->
+      <td width="5%">Оператор</td>
+
+    </tr>
+
+    {% for log in logs %}
+    <tr>
+
+      <td style="text-align: center;">{{ log.time_event}}</td>
+      <td>{{log.event }}</td>
+      <td style="text-align: center;">{{ log.username_report }} </td>
+      <td style="text-align: center;">{{ log.time_report }}
+      </td>
+      <td>{{ log.after_event }}</td>
+      <td style="text-align: center;">{{ log.operator }}</td>
+
+      </form>
+      {% endfor %}
+
+    </tr>
+
+  </table>
+  {% endblock %}

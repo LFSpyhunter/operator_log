@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style type="text/css">
+    .container {
+        width: 1366px;
+    }
+
+    table,
+    td,
+    tr {
+        border: 1px solid #000;
+    }
+
+    .table_oper_log {
+        margin-top: 40px;
+        font-size: 12px;
+        width: 100%;
+    }
+
+    .table_oper_log input[type="text"],
+    input[type="time"],
+    textarea {
+        width: 100%;
+        border: none;
+    }
+</style>
+<div class="container">
+    <h1 style="text-align: center; font-size: 42px; margin-top: 30px;"> Журнал операторов IT отдела</h1>
+    <table class="table_oper_log">
+        <tr style="text-align: center;">
+            <td width="2%">id</td>
+            <td width="9%">Время события</td>
+            <td>Событие</td>
+            <td width="5%">Кому доложил</td>
+            <td width="2%">Время восстан.</td>
+            <td>Пояснение события</td>
+            <!-- <td width="5%">Статус</td> -->
+            <td width="5%">Оператор</td>
+            <td width="6%"></td>
+        </tr>
+
+        {% for log in logs %}
+        <tr>
+            <form action="/update" method="POST">
+                <input type="hidden" value="{{log.id}}" name="id">
+                <td style="text-align: center;">{{ log.id}}</td>
+                <td style="text-align: center;">{{ log.time_event}}</td>
+                <td><textarea type="text" value="{{log.event }}" name="event">{{log.event }}</textarea></td>
+                <td><select name="username_report">
+                        <option value="{{ log.username_report }}">{{ log.username_report }}</option>
+                        <option value="Федосеев">Федосеев</option>
+                        <option value="Понкратов">Понкратов</option>
+                        <option value="Кочеров">Кочеров</option>
+                        <option value="Трушин">Трушин</option>
+                        <option value="Шагалин">Шагалин</option>
+                        <option value="Брянский">Брянский</option>
+                    </select>
+
+                </td>
+                <td><input style="text-align: center;" type="time" value="{{ log.time_report }}" name="time_report">
+                </td>
+                <td><textarea type="text" value="{{ log.after_event }}"
+                        name="after_event">{{ log.after_event }}</textarea></td>
+                <!-- <td><select name="status_event">
+                        <option value="{{ log.status_event }}">{{ log.status_event }}</option>
+                        <option value="Не работает">Не работает</option>
+                        <option value="Восстанов">Восстанов</option>
+                    </select>
+                </td> -->
+                <td style="text-align: center;">{{ log.operator }}</td>
+                <td><input type="submit" value="Применить"></td>
+
+            </form>
+            {% endfor %}
+
+        </tr>
+
+    </table>
+    <br />
+    <br />
+    <br />
+    <br />
+    <form action="/addpost" method="post">
+        Событие: <input border: 1px type="text" name="event" required>
+        <input type="submit" name="form" value="Отправить" />
+    </form>
+</div>
+{% endblock %}
+

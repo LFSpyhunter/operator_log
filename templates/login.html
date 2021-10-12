@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div style="width: 300px; margin-top: 100px;text-align: center;">
+            <h3 class="title">Вход</h3>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="notification is-danger">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <form method="POST" action="/login">
+            <div class="mb-3">
+                <input type="text" class="form-control" id="exampleInputName1" aria-describedby="emailHelp"
+                    placeholder="Оператор" name="name">
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Пароль"
+                    name="password">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Войти</button>
+        </form>
+        <!-- <div style="margin: 100px auto;">
+        <h3 class="title">Вход</h3>
+        <div class="box">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="notification is-danger">
+                {{ messages[0] }}
+            </div>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="/login">
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="text" name="name" placeholder="Оператор" autofocus="">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="password" name="password" placeholder="Пароль">
+                    </div>
+                </div>
+                <div class="field">
+                <label class="checkbox">
+                    <input type="checkbox">
+                    запомнить меня
+                </label>
+            </div> 
+                <button class="button is-block is-info is-large is-fullwidth">Войти</button>
+            </form>
+        </div>-->
+    </div>
+</div>
+{% endblock %}
