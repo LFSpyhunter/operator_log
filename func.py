@@ -11,6 +11,8 @@ from models import OperatorLogModel, db
 
 def index():
     logs = OperatorLogModel.query.all()[-10:]
+    if not current_user.is_authenticated:
+        return index_all()
     return render_template('operlog.html', logs=logs)
 def index_all():
     logs = OperatorLogModel.query.all()[-20:]

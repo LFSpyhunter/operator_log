@@ -28,6 +28,9 @@
                         {% if current_user.is_authenticated %}
                         <span style="margin-right: 6px;">Оператор: <span
                                 style="color: red;">{{current_user.name}}</span></span>
+                        <a style="margin-right: 10px;" href="{{ url_for('auth.operlog') }}" class="navbar-item">
+                            Журнал
+                        </a>
                         <a href="{{ url_for('auth.logout') }}" class="navbar-item">
                             Выход
                         </a>
