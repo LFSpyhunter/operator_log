@@ -59,5 +59,5 @@ class OperatorLogDelete(Resource):
 
 
 api.add_resource(OperatorLogDelete, '/delete/<int:log_id>')
-api.add_resource(OperatorLogUpdate, '/update/<int:log_id>')
-api.add_resource(OperatorLogAdd, '/add')
+# api.add_resource(OperatorLogUpdate, '/update/<int:log_id>')
+# api.add_resource(OperatorLogAdd, '/add')

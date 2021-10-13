@@ -19,6 +19,8 @@ def index_all():
     return render_template('index.html', logs=logs)    
 
 def add():
+    if not current_user.is_authenticated:
+       return abort(401)
     now = datetime.datetime.now()
     args = log_post_args.parse_args()
     log_oper = OperatorLogModel(time_event=now.strftime("%d-%m-%Y %H:%M"), event=args['event'], username_report=args['username_report'],
@@ -28,7 +30,12 @@ def add():
     return redirect("/operlog", 302)
 
 def put():
+    if not current_user.is_authenticated:
+       return abort(401)
     args = log_post_args.parse_args()
+    if not args['operator'] == current_user.name:
+        flash("Нельзя редактировать записи другого оператора")
+        return redirect("/operlog", 302)
     log = OperatorLogModel.query.filter_by(id=args['id']).first()
     if not log:
         abort(404, message="Net takogo ID")

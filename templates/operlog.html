@@ -51,6 +51,7 @@
                         <option value="{{ log.username_report }}">{{ log.username_report }}</option>
                         <option value="Федосеев">Федосеев</option>
                         <option value="Понкратов">Понкратов</option>
+                        <option value="Панин">Панин</option>
                         <option value="Кочеров">Кочеров</option>
                         <option value="Трушин">Трушин</option>
                         <option value="Шагалин">Шагалин</option>
@@ -68,6 +69,7 @@
                         <option value="Восстанов">Восстанов</option>
                     </select>
                 </td> -->
+                <input type="hidden" value="{{log.operator}}" name="operator">
                 <td style="text-align: center;">{{ log.operator }}</td>
                 <td><input type="submit" value="Применить"></td>
 
@@ -77,11 +79,18 @@
         </tr>
 
     </table>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="notification is-danger">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
     <br />
     <br />
     <br />
     <br />
-    <form action="/addpost" method="post">
+    <form action="/add" method="post">
         Событие: <input border: 1px type="text" name="event" required>
         <input type="submit" name="form" value="Отправить" />
     </form>
