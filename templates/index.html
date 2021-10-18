@@ -3,26 +3,26 @@
 {% block content %}
 <style type="text/css">
   .container {
-      width: 1366px;
+    width: 1366px;
   }
 
   table,
   td,
   tr {
-      border: 1px solid #000;
+    border: 1px solid #000;
   }
 
   .table_oper_log {
-      margin-top: 40px;
-      font-size: 12px;
-      width: 100%;
+    margin-top: 40px;
+    font-size: 12px;
+    width: 100%;
   }
 
   .table_oper_log input[type="text"],
   input[type="time"],
   textarea {
-      width: 100%;
-      border: none;
+    width: 100%;
+    border: none;
   }
 </style>
 <div class="container">
@@ -50,10 +50,9 @@
       <td>{{ log.after_event }}</td>
       <td style="text-align: center;">{{ log.operator }}</td>
 
-      </form>
-      {% endfor %}
+
 
     </tr>
-
+    {% endfor %}
   </table>
   {% endblock %}

@@ -31,7 +31,11 @@ class OperatorLogAdd(Resource):
         db.session.add(log_oper)
         db.session.commit()
         return log_oper,  201
-class OperatorLogUpdate(Resource):
+class OperatorLog(Resource):
+    @marshal_with(resource_fields)
+    def get(self, log_id):
+        log = OperatorLogModel.query.filter_by(id=log_id).first()
+        return log
     @marshal_with(resource_fields)
     def put(self, log_id):
         args = log_post_args.parse_args()
@@ -50,14 +54,20 @@ class OperatorLogUpdate(Resource):
             log.status_event = args['status_event']
         db.session.commit()
         return log, 201
-class OperatorLogDelete(Resource):
     def delete(self, log_id):
         log = OperatorLogModel.query.filter_by(id=log_id).first()
         db.session.delete(log)
         db.session.commit()
         return "Log delete", 204
+class OperatorLogList(Resource):
+    def get(self):
+        logs = OperatorLogModel.query.all()[-20:]
+        log_all = {}
+        for log in logs:
+            log_all[log.id] = {'time_event': log.time_event, 'after_event': log.after_event, 'event': log.event,
+                   'username_report': log.username_report, 'time_report': log.time_report, 'status_event': log.status_event, 'operator': getpass.getuser()}
+        return log_all
 
-
-api.add_resource(OperatorLogDelete, '/delete/<int:log_id>')
-# api.add_resource(OperatorLogUpdate, '/update/<int:log_id>')
-# api.add_resource(OperatorLogAdd, '/add')
+api.add_resource(OperatorLog, '/api/<int:log_id>')
+api.add_resource(OperatorLogAdd, '/api/add')
+api.add_resource(OperatorLogList, '/api')

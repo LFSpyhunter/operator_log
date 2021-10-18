@@ -8,18 +8,18 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(DB_NAME)
 db = SQLAlchemy(app)
 
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
-    name = db.Column(db.String(1000), unique=True)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(25), unique=True)
     password = db.Column(db.String(100))
     
 class OperatorLogModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    time_event = db.Column(db.String(120))
-    event = db.Column(db.String(120))
-    username_report = db.Column(db.String(80))
+    time_event = db.Column(db.String(50))
+    event = db.Column(db.String(300))
+    username_report = db.Column(db.String(25))
     after_event = db.Column(db.String(300))
-    time_report = db.Column(db.String(120))
+    time_report = db.Column(db.String(50))
     status_event = db.Column(db.String(80))
-    operator = db.Column(db.String(80))
+    operator = db.Column(db.String(25))
 
 db.create_all()
