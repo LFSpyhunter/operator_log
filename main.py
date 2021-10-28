@@ -5,6 +5,7 @@ import func
 main = Blueprint('main', __name__)
 
 
+
 @main.route('/')
 def index():
     return func.index_all()
@@ -23,3 +24,8 @@ def put():
 @main.route('/adduser', methods=['POST'])
 def signup_post():
     return func.signup_post()
+
+
+@main.route('/search', methods=['GET','POST'])
+def search():
+    return func.search()

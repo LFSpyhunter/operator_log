@@ -26,7 +26,7 @@ def operlog():
 
 @auth.route('/signup')
 def signup():
-    return "Регистрация закрыта"
+    return render_template('singup.html')
 
 
 @auth.route('/logout')

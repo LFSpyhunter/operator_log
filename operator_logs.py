@@ -4,6 +4,7 @@ from logging.config import dictConfig
 from flask import Flask
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
 from config import LOGGING
 
 dictConfig(LOGGING)
@@ -32,5 +33,8 @@ from models import User
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-app.config["JWT_SECRET_KEY"] = "super-my-secret"  
-jwt = JWTManager(app)    
+
+app.config["JWT_SECRET_KEY"] = "super-my-secret"
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)  
+jwt = JWTManager(app)
+

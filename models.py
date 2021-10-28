@@ -3,7 +3,7 @@ from config import DB_NAME
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 
-app.config['SECRET_KEY'] = 'secret-key-goes-here'
+app.config['SECRET_KEY'] = 'secret-my-key-goes-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(DB_NAME)
 db = SQLAlchemy(app)
 
@@ -16,10 +16,9 @@ class OperatorLogModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     time_event = db.Column(db.String(50))
     event = db.Column(db.String(300))
-    username_report = db.Column(db.String(25))
-    after_event = db.Column(db.String(300))
-    time_report = db.Column(db.String(50))
-    status_event = db.Column(db.String(80))
+    username_report = db.Column(db.String(25), default="-----")
+    time_report = db.Column(db.String(15))
+    after_event = db.Column(db.String(300), default=" ")
     operator = db.Column(db.String(25))
 
 db.create_all()

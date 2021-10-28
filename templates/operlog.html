@@ -24,6 +24,10 @@
         width: 100%;
         border: none;
     }
+    .request_send input[type="text"]
+    {
+        width: 50%;
+    }
 </style>
 <div class="container">
     <h1 style="text-align: center; font-size: 42px; margin-top: 30px;"> Журнал операторов IT отдела</h1>
@@ -37,7 +41,6 @@
                     <td width="5%">Кому доложил</td>
                     <td width="2%">Время восстан.</td>
                     <td>Пояснение события</td>
-                    <!-- <td width="5%">Статус</td> -->
                     <td width="5%">Оператор</td>
                     <td width="6%"></td>
                 </tr>
@@ -86,7 +89,6 @@
                     <td width="5%">Кому доложил</td>
                     <td width="2%">Время восстан.</td>
                     <td>Пояснение события</td>
-                    <!-- <td width="5%">Статус</td> -->
                     <td width="5%">Оператор</td>
                     <td width="6%"></td>
                 </tr>
@@ -142,7 +144,7 @@
     <br />
     <br />
     <br />
-    <form action="/add" method="post">
+    <form class="request_send" action="/add" method="post">
         Событие: <input border: 1px type="text" name="event" required>
         <input type="submit" name="form" value="Отправить" />
     </form>

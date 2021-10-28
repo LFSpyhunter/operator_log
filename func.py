@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from flask import render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user
@@ -25,11 +25,11 @@ def index_all():
 
 def add():
     if not current_user.is_authenticated:
-        return abort(401)
-    now = datetime.datetime.now()
+        return abort(401)  
+    now = datetime.now()
     args = log_post_args.parse_args()
-    log_oper = OperatorLogModel(time_event=now.strftime("%d-%m-%Y %H:%M"), event=args['event'], username_report=args['username_report'],
-                                after_event=args['after_event'], time_report=args['time_report'], status_event=args['status_event'], operator=current_user.name)
+    log_oper = OperatorLogModel(time_event=now.strftime("%Y-%m-%d %H:%M"), event=args['event'], username_report=args['username_report'], time_report=args['time_report'],after_event=args['after_event'],  operator=current_user.name)
+    # now.strftime("%d-%m-%Y %H:%M")
     db.session.add(log_oper)
     db.session.commit()
     return redirect("/operlog", 302)
@@ -53,8 +53,6 @@ def put():
         log.after_event = args['after_event']
     if args['time_report']:
         log.time_report = args['time_report']
-    if args['status_event']:
-        log.status_event = args['status_event']
     db.session.commit()
     return redirect("/operlog", 302)
 
@@ -82,7 +80,6 @@ def login_post():
         flash('Неправильный логин или пароль')
         return redirect(url_for('auth.login')) 
     login_user(user, remember=remember)
-    
     return redirect(url_for('auth.operlog'))
 
 def login_api():
@@ -93,3 +90,9 @@ def login_api():
         return jsonify(msg="You shall not pass"), 401
     access_token = create_access_token(identity=name)
     return jsonify(access_token=access_token)
+
+def search():
+    date = request.form.get('date')
+    event = request.form.get('event')
+    date_logs = OperatorLogModel.query.filter(OperatorLogModel.time_event.like("{}%".format(date)),OperatorLogModel.event.like("%{}%".format(event)))
+    return render_template('search.html', logs=date_logs)

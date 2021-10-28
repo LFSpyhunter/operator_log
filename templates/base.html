@@ -22,6 +22,9 @@
                         <a style="margin-right: 10px;" href="{{ url_for('main.index') }}" class="navbar-item">
                             Журнал
                         </a>
+                        <a style="margin-right: 10px;" href="{{ url_for('main.search') }}" class="navbar-item">
+                            Поиск
+                        </a>
                         <a href="{{ url_for('auth.login') }}" class="navbar-item">
                             Вход
                         </a>
@@ -31,6 +34,9 @@
                                 style="color: red;">{{current_user.name}}</span></span>
                         <a style="margin-right: 10px;" href="{{ url_for('auth.operlog') }}" class="navbar-item">
                             Журнал
+                        </a>
+                        <a style="margin-right: 10px;" href="{{ url_for('main.search') }}" class="navbar-item">
+                            Поиск
                         </a>
                         <a href="{{ url_for('auth.logout') }}" class="navbar-item">
                             Выход
@@ -55,7 +61,8 @@
     <script type="text/javascript" src="/static/js/slick.min.js"></script>
     <script>
         $('.single-slide').slick({
-
+            dots: true,
+            infinite: false
         });
     </script>
 </body>
