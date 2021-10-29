@@ -8,7 +8,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 api = Api(app)
 log_post_args = reqparse.RequestParser()
 log_post_args.add_argument("id", type=int)
-log_post_args.add_argument("time_event", type=str)
+log_post_args.add_argument("time_event", type=datetime)
 log_post_args.add_argument("event", type=str)
 log_post_args.add_argument("username_report", type=str)
 log_post_args.add_argument("time_report", type=str)
@@ -16,7 +16,7 @@ log_post_args.add_argument("after_event", type=str)
 log_post_args.add_argument("operator", type=str)
 
 
-resource_fields = {'id': fields.Integer, 'time_event': fields.String,  'event': fields.String, 'username_report': fields.String, 
+resource_fields = {'id': fields.Integer, 'time_event': fields.DateTime,  'event': fields.String, 'username_report': fields.String, 
                     'time_report': fields.String, 'after_event': fields.String, 'operator': fields.String}
 
 
@@ -36,11 +36,11 @@ class OperatorLogAdd(Resource):
         return log_oper,  201
     @jwt_required()
     def get(self):
-        logs = OperatorLogModel.query.all()[-20:]
+        logs = OperatorLogModel.query.all()
         log_all = {}
         for log in logs:
             log_all[log.id] = {'time_event': log.time_event, 'after_event': log.after_event, 'event': log.event,
-                               'username_report': log.username_report, 'time_report': log.time_report, 'status_event': log.status_event, 'operator': log.operator}
+                               'username_report': log.username_report, 'time_report': log.time_report, 'operator': log.operator}
         return log_all
 
 

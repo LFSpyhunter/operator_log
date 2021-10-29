@@ -6,7 +6,7 @@ main = Blueprint('main', __name__)
 
 
 
-@main.route('/')
+@main.route('/', methods=['GET','POST'])
 def index():
     return func.index_all()
 

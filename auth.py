@@ -19,7 +19,7 @@ def login_post():
 def login_api():
     return func.login_api()
 
-@auth.route('/operlog')
+@auth.route('/operlog', methods=['GET','POST'])
 def operlog():
     return func.index()
 

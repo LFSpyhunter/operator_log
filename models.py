@@ -14,7 +14,7 @@ class User(UserMixin, db.Model):
     
 class OperatorLogModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    time_event = db.Column(db.String(50))
+    time_event = db.Column(db.DateTime)
     event = db.Column(db.String(300))
     username_report = db.Column(db.String(25), default="-----")
     time_report = db.Column(db.String(15))

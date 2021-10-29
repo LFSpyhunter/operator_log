@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user
@@ -10,7 +10,19 @@ from flask_jwt_extended import create_access_token
 
 
 def index():
-    logs = OperatorLogModel.query[-20:]
+    logs = OperatorLogModel.query.all()[-10:]
+    if request.method == "POST":
+        date= request.form.get('date')
+        if date == "1":
+           logs = OperatorLogModel.query.all()[-10:]
+        else:
+            date_start = datetime.strptime("{} 00:00".format(datetime.today().strftime('%Y-%m-%d')), "%Y-%m-%d %H:%M") - timedelta(days=1)
+            date_end = datetime.today().strftime('%Y-%m-%d %H:%M')
+            logs = OperatorLogModel.query.filter(OperatorLogModel.time_event.between(date_start, date_end))
+    
+    return render_template('operlog.html', logs=logs)
+
+    logs = OperatorLogModel.query[-10:]
     # logs = OperatorLogModel.query.all()[-10:]
     if not current_user.is_authenticated:
         return index_all()
@@ -18,17 +30,27 @@ def index():
 
 
 def index_all():
-    logs = OperatorLogModel.query[-40:]
-    # logs = OperatorLogModel.query.all()[-20:]
+    date_start = datetime.strptime("{} 00:00".format(datetime.today().strftime('%Y-%m-%d')), "%Y-%m-%d %H:%M")
+    date_end = datetime.today().strftime('%Y-%m-%d %H:%M')
+    if request.method == "POST":
+        date= request.form.get('date')
+        if date == "1":
+            date_start = datetime.strptime("{} 00:00".format(datetime.today().strftime('%Y-%m-%d')), "%Y-%m-%d %H:%M")
+            date_end = datetime.today().strftime('%Y-%m-%d %H:%M')
+        else:
+            date_start = datetime.strptime("{} 00:00".format(datetime.today().strftime('%Y-%m-%d')), "%Y-%m-%d %H:%M") - timedelta(days=3)
+            date_end = datetime.today().strftime('%Y-%m-%d %H:%M')
+        logs = OperatorLogModel.query.filter(OperatorLogModel.time_event.between(date_start, date_end))
+    logs = OperatorLogModel.query.filter(OperatorLogModel.time_event.between(date_start, date_end))
     return render_template('index.html', logs=logs)
 
 
 def add():
     if not current_user.is_authenticated:
-        return abort(401)  
-    now = datetime.now()
+        return abort(401)
+    timestamp=int(datetime.today().strftime('%s'))
     args = log_post_args.parse_args()
-    log_oper = OperatorLogModel(time_event=now.strftime("%Y-%m-%d %H:%M"), event=args['event'], username_report=args['username_report'], time_report=args['time_report'],after_event=args['after_event'],  operator=current_user.name)
+    log_oper = OperatorLogModel(time_event=datetime.fromtimestamp(timestamp), event=args['event'], username_report=args['username_report'], time_report=args['time_report'],after_event=args['after_event'],  operator=current_user.name)
     # now.strftime("%d-%m-%Y %H:%M")
     db.session.add(log_oper)
     db.session.commit()
@@ -92,7 +114,18 @@ def login_api():
     return jsonify(access_token=access_token)
 
 def search():
-    date = request.form.get('date')
-    event = request.form.get('event')
-    date_logs = OperatorLogModel.query.filter(OperatorLogModel.time_event.like("{}%".format(date)),OperatorLogModel.event.like("%{}%".format(event)))
-    return render_template('search.html', logs=date_logs)
+    if request.method == "POST":
+        if request.form.get('date1') and request.form.get('date2'):
+            date_start = datetime.strptime("{} 00:00".format(request.form.get('date1')), "%Y-%m-%d %H:%M")
+            date_end = datetime.strptime("{} 23:59".format(request.form.get('date2')), "%Y-%m-%d %H:%M")       
+        else:
+            date_start = ""
+            date_end = ""
+        if not request.form.get('date1') and not request.form.get('date2') and request.form.get('event'):
+            date_start = ""
+            date_end = datetime.today().strftime('%Y-%m-%d %H:%M')
+            print(date_end)
+        event = request.form.get('event')
+        date_logs = OperatorLogModel.query.filter(OperatorLogModel.time_event.between(date_start, date_end), OperatorLogModel.event.like("%{}%".format(event)))
+        return render_template('search.html', logs=date_logs)
+    return render_template('search.html')
