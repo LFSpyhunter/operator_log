@@ -24,12 +24,12 @@ class OperatorLogAdd(Resource):
     @marshal_with(resource_fields)
     @jwt_required()
     def post(self):
-        now = datetime.now()
+        timestamp=int(datetime.today().strftime('%s'))
         current_user = get_jwt_identity()
         args = log_post_args.parse_args()
         if not args['event']:
             abort(404, message="Напишите событие")
-        log_oper = OperatorLogModel(time_event=now.strftime("%Y-%m-%d %H:%M"), event=args['event'], username_report=args['username_report'],
+        log_oper = OperatorLogModel(time_event=datetime.fromtimestamp(timestamp), event=args['event'], username_report=args['username_report'],
                                     after_event=args['after_event'], time_report=args['time_report'], operator=current_user)
         db.session.add(log_oper)
         db.session.commit()
@@ -39,7 +39,7 @@ class OperatorLogAdd(Resource):
         logs = OperatorLogModel.query.all()
         log_all = {}
         for log in logs:
-            log_all[log.id] = {'time_event': log.time_event, 'after_event': log.after_event, 'event': log.event,
+            log_all[log.id] = {'time_event': log.time_event.strftime('%Y-%m-%d %H:%M'), 'after_event': log.after_event, 'event': log.event,
                                'username_report': log.username_report, 'time_report': log.time_report, 'operator': log.operator}
         return log_all
 
@@ -49,6 +49,9 @@ class OperatorLog(Resource):
     @jwt_required()
     def get(self, log_id):
         log = OperatorLogModel.query.filter_by(id=log_id).first()
+        print(log)
+        if not log:
+            abort(404, message="Net takogo ID")
         return log
 
     @marshal_with(resource_fields)
