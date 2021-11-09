@@ -21,6 +21,7 @@ app.register_blueprint(auth_blueprint)
 from main import main as main_blueprint
 app.register_blueprint(main_blueprint)
 
+app.config['PROPAGATE_EXCEPTIONS'] = True
 import operator_api
 
 login_manager = LoginManager()
@@ -35,6 +36,7 @@ def load_user(user_id):
 
 
 app.config["JWT_SECRET_KEY"] = "super-my-secret"
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)  
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24) 
+ 
 jwt = JWTManager(app)
 
