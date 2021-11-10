@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user
 from models import User
-from flask import render_template, redirect, jsonify
+from sqlalchemy import or_
 from operator_api import log_post_args, abort
 from models import OperatorLogModel, db
 from flask_jwt_extended import create_access_token
@@ -133,7 +133,6 @@ def search():
             date_start = ""
             date_end = datetime.today().strftime('%Y-%m-%d %H:%M')
         event = request.form.get('event')
-        date_logs = OperatorLogModel.query.filter(OperatorLogModel.time_event.between(
-            date_start, date_end), OperatorLogModel.event.like("%{}%".format(event)))
+        date_logs = OperatorLogModel.query.filter(OperatorLogModel.time_event.between(date_start, date_end), or_(OperatorLogModel.event.like("%{}%".format(event)), OperatorLogModel.after_event.like("%{}%".format(event))))
         return render_template('search.html', logs=date_logs)
     return render_template('search.html')

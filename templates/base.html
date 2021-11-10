@@ -30,8 +30,11 @@
                         {% if current_user.is_authenticated %}
                         <span style="margin-right: 6px;">Оператор: <span
                                 style="color: red;">{{current_user.name}}</span></span>
-                        <a style="margin-right: 10px;" href="{{ url_for('auth.operlog') }}" class="navbar-item">
+                        <a style="margin-right: 10px;" href="{{ url_for('main.index') }}" class="navbar-item">
                             Журнал
+                        </a>
+                        <a style="margin-right: 10px;" href="{{ url_for('auth.operlog') }}" class="navbar-item">
+                            Журнал для операторов
                         </a>
                         <a style="margin-right: 10px;" href="{{ url_for('main.search') }}" class="navbar-item">
                             Поиск
@@ -51,10 +54,10 @@
                 {% endblock %}
             </div>
         </div>
-      
+
     </section>
-    
-   
+
+
 </body>
 
 </html>
