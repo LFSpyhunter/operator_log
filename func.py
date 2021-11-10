@@ -10,13 +10,13 @@ from flask_jwt_extended import create_access_token
 
 
 def index():
-    logs = OperatorLogModel.query.all()[-10:]
     if not current_user.is_authenticated:
         return index_all()
+    logs = OperatorLogModel.query[-10:]
     if request.method == "POST":
         date = request.form.get('date')
         if date == "1":
-            logs = OperatorLogModel.query.all()[-10:]
+            logs = OperatorLogModel.query[-10:]
         else:
             date_start = datetime.strptime("{} 00:00".format(
                 datetime.today().strftime('%Y-%m-%d')), "%Y-%m-%d %H:%M") - timedelta(days=1)
