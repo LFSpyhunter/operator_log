@@ -9,14 +9,14 @@ from config import LOGGING
 
 dictConfig(LOGGING)
 
-
 app = Flask(__name__)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.logger = logging.getLogger('operators')
 app.logger.info("Operators started")
 
+
 from auth import auth as auth_blueprint
 app.register_blueprint(auth_blueprint)
-
 
 from main import main as main_blueprint
 app.register_blueprint(main_blueprint)
@@ -35,8 +35,11 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-app.config["JWT_SECRET_KEY"] = "super-my-secret"
+app.config["JWT_SECRET_KEY"] = "super-my-secret"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24) 
  
 jwt = JWTManager(app)
+
+import ws
+
 

@@ -1,0 +1,324 @@
+/* ######################## MAIN SETTINGS CSS ######################## */
+.container {
+  width: 1366px;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  width: 100%;
+  /* background: url(/static/img/Technologyab23.jpg) no-repeat;
+  background-size: cover;  */
+}
+
+header {
+  background: #060b8a;
+}
+
+.body_content {
+  padding: 10px;
+}
+
+/* ######################## MAIN PAGE ######################## */
+.wrapper_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  margin-left: 20px;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo img {
+  width: 120px;
+  margin: 5px 10px 5px 0;
+}
+
+.logo_name {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 5px 0 5px 20px;
+}
+
+.operator_content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  margin-right: 25px;
+  text-align: center;
+}
+
+.sign_btn {
+  color: white;
+  font-size: 36px;
+  margin-left: 15px;
+}
+
+.sign_btn:hover {
+  color: #ef7f1a;
+}
+
+.user {
+  color: #ef7f1a;
+}
+
+/* новое меню*/
+.navbar {
+  padding: 0px;
+  display: block;
+  width: 100%;
+
+}
+
+.navbar a {
+  margin-left: 10px;
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.dropdown {
+  float: left;
+  position: relative;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.navbar a:hover,
+.dropdown:hover .dropbtn {
+  background-color: #ef7f1a;
+  border-radius: 5px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 195px;
+  padding: 5px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 3px;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+  border-radius: 5px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* конец */
+
+
+
+.search_botton {
+  color: white;
+}
+
+.add_title_news {
+  display: block;
+  width: 100%;
+}
+
+.add_descrip_news {
+  border: 1px solid rgb(118, 118, 118);
+  border-radius: 5px;
+}
+
+
+/* ######################## OPERATOR IT ######################## */
+.hr_journal {
+  margin: 0 0 10px 0;
+}
+.title_wrapper{
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  font-size: 12px;
+}
+.title_journal {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.table_oper_log {
+  vertical-align: middle;
+  margin-top: 20px;
+  font-size: 12px;
+  overflow: scroll;
+  width: 100%;
+}
+
+.table_oper_log input[type="text"],
+input[type="time"],
+textarea {
+  width: 100%;
+  border: none;
+}
+
+.block_button {
+  margin-top: 0px;
+}
+
+.block_button form {
+  display: inline;
+}
+
+.request_send input[type="text"] {
+  width: 50%;
+}
+
+.form_content {
+  text-align: center;
+  margin: 50px auto;
+}
+
+/* ######################## ADMIN PANEL ######################## */
+.table_admin_panel {
+  vertical-align: middle;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 10px;
+  width: 100%;
+}
+
+
+/* ######################## SWITCH INFO ######################## */
+.switch-info {
+  margin-top: 5px;
+  text-align: center;
+}
+
+.switch-info .model-value {
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.switch-info .model-info {
+  margin-left: 20px;
+}
+
+.switch-header-info {
+  font-size: 12px;
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.btn-info-port {
+  font-size: 8px;
+}
+
+.set-port input {
+  width: 100%;
+}
+
+.set-port select {
+  width: 100%;
+}
+
+.save_button {
+  margin-left: 20px;
+  padding: 5px 20px 5px 20px;
+  border-radius: 5px;
+  border: 1px solid grey;
+  color: black;
+  font-weight: bold;
+  background-color: #dedede;
+
+}
+
+.save_button:hover {
+  color: red;
+}
+
+
+/* ######################## ADMIN PANEL ######################## */
+.admin-panel {
+  margin-top: 20px;
+  /* display: flex;
+  justify-content: space-around; */
+}
+
+
+/* ######################## MODAL WINDOW ######################## */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 600px;
+}
+
+.modal-content h5 {
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  color: #aaa;
+  top: -10px;
+  right: 5px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ######################## SET SWITCH ######################## */
+
+
+.form-control {
+  margin-top: 15px;
+}

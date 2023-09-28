@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <div style="width: 300px; margin: 100px auto; text-align: center;">
+        <h3 class="title">Информация о порте</h3>
+        <div class="box">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div style="color:red;">
+                {{ messages[0] }}.
+            </div>
+            {% endif %}
+            {% endwith %}
+            <!-- <form method="POST" action="/adduser">
+            <div class="field">
+                <div class="control">
+                    <input class="input" type="text" name="name" placeholder="Фамилия" autofocus="">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input" type="password" name="password" placeholder="Пароль">
+                </div>
+            </div>
+
+            <button class="button">Зарегистрироваться</button>
+        </form> -->
+            <form method="POST" action="/inkoapi">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="exampleInputName1" aria-describedby="emailHelp"
+                        placeholder="Коммутатор" name="sw" required>
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="exampleInputName1" aria-describedby="emailHelp"
+                        placeholder="Порт" name="port">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Получить</button>
+            </form>
+
+
+        </div>
+        {% if inko %}
+        <style>
+            li {
+                list-style-type: none;
+                /* Убираем маркеры */
+            }
+
+            ul {
+                margin-left: 0;
+                /* Отступ слева в браузере IE и Opera */
+                padding-left: 0;
+                /* Отступ слева в браузере Firefox, Safari, Chrome */
+            }
+        </style>
+        <div style="text-align: left;">
+            <ul>
+                <li>Порт: <b>{{ inko['port'] }}</b></li>
+                <li>Тип порта: <b>{{ inko['type'] }}</b></li>
+                <li>Статут порта:
+                    {% if inko['state'] %}
+                    <span style="color: green;">Enable</span>
+                    {% else %}
+                    <span style="color: red;">Disabled</span>
+                    {% endif %}
+                </li>
+                <li>Скорость порта: <b>{{ inko['speed'] }}</b></li>
+                <li>Линк:
+                    {% if inko['link'] %}
+                    <span style="color: green;">UP</span>
+                    {% else %}
+                    <span style="color: red;">Down</span>
+                    {% endif %}
+                </li>
+                <li>Скорость на порту: <b>{{ inko['status'] }}</b></li>
+                <li>Описание: <b>{{ inko['desc'] }}</b></li>
+                <li>Диагностика кабеля: <br/> <b>{{ inko['cable'] }}</b></li>
+
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

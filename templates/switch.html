@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="title_wrapper">
+        <div>
+            <h5>Просмотр портов коммутатора</h5>
+        </div>
+        {% if model %}
+        <div class="switch-info">
+            <span class="model-info">IP:<span class="model-value" id="ip-commut">{{ip}}</span></span>
+            <span class="model-info">Модель:<span class="model-value">{{model[0]}}</span></span>
+            <span class="model-info"> Место устан.:<span class="model-value">{{model[1]}}</span></span> <span
+                class="model-info"> FW:<span class="model-value">{{model[2]}}</span></span>
+        </div>
+        {% endif %}
+    </div>
+    <hr class="hr_journal">
+    <div class="switch-header-info">
+        <div>
+            <form action="/switch" method="post">
+                Введите IP:
+                <input type="text" name="ip_switch" required>
+                <input type="submit" value="Получить">
+            </form>
+        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div style="color:red; text-align: left; font-weight: bold;">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% if model %}
+        <div class="switch-info">
+            <a href="/refresh"><span class="save_button">Обновить</span></a>
+            <!-- <span class="model-info">IP:<span class="model-value" id="ip-commut">{{ip}}</span></span>
+            <span class="model-info">Модель:<span class="model-value">{{model[0]}}</span></span>
+            <span class="model-info"> Место устан.:<span class="model-value">{{model[1]}}</span></span> <span
+                class="model-info"> FW:<span class="model-value">{{model[2]}}</span></span> -->
+            <!-- <a href="/switchlog" target="_blank"><span class="save_button">Logs</span></a> -->
+            {% if current_user.permission['set_port'] == "enable" %}
+            <a href="/saveswitch"><span class="save_button">Сохраниться</span></a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    <table class="table table-sm table-striped table_oper_log">
+        <thead>
+            <tr style="text-align: center;">
+                <td width="5%">Ports</td>
+                <td width="5%">State</td>
+                <td width="5%">Link</td>
+                <td width="7%">Speed</td>
+                <td width="9%">Errors</td>
+                <td width="15%">Descriprion</td>
+                <td>Vlans</td>
+                <td width="10%">Дополнительно</td>
+            </tr>
+        </thead>
+        <tbody style="text-align: center;">
+            {% if ports %}
+            {% for i in range(1,29)%}
+            <tr>
+                <td>Port {{i}}</td>
+                <td {% if ports['state'][i]=="enable" %} style="color: Green" {% else %} style="color: Red" {% endif %}>
+                    {{ports['state'][i]}}</td>
+                <td {% if ports['link'][i]=="UP" %} style="color: Green" {% else %} style="color: Red" {% endif %}>
+                    {{ports['link'][i]}}</td>
+                <td>{{ports['speed'][i]}}</td>
+                <td>{{ports['errors'][i]}}</td>
+                <td>{{ports['desc'][i]}}</td>
+                <td>{{ports['vlans'][i]}}</td>
+                <td>
+                    <button class="btn-info-port" type="submit" onclick="show_me({{i}});">Показать</button>
+                    {% if current_user.permission['set_port'] == "enable" %}
+                    <button class="btn-info-port" type="submit" onclick="set_port({{i}});">Настроить</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

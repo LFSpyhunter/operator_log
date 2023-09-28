@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="title_wrapper">
+        <div>
+            <h5>Журнал операторов тех.поддержки</h5>
+        </div>
+        <div class="block_button">
+            <form action="/edittp" method="POST">
+                <button value="1" name="date" type="submit" class="btn-primary">Последние записи</button>
+            </form>
+            <form action="/edittp" method="POST">
+                <button value="3" name="date" type="submit" class="btn-primary">Записи за сутки</button>
+            </form>
+            <a class="btn-primary" href="http://192.168.255.251/poisk.php" target="_blank">Поиск в серой базе</a>
+        </div>
+    </div>
+    <hr class="hr_journal">
+    <table class="table table-sm table-striped table_oper_log">
+        <tr style="text-align: center;">
+            <td width="4%"></td>
+            <td width="2%">id</td>
+            <td width="11%">Время</td>
+            <td width="8%">Договор</td>
+            <td>Суть проблемы</td>
+            <td width="15%">Телефон</td>
+            <td width="3%">Заявка</td>
+            <td width="8%">Оператор</td>
+            <td width="5%"></td>
+
+        </tr>
+
+        {% for log in logs%}
+        <tr>
+            <form>
+                <input type="hidden" value="{{log.id}}" name="id">
+                <input type="hidden" value="tp" name="otdel">
+                <td>
+                    {% if (log.operator == current_user.name and current_user.permission['del_entry'] == "enable") or
+                    current_user.permission['admin_user'] == "enable" %}
+                    <input formaction="/delete" formmethod="post" type="submit" value="Удалить">
+                    {% endif %}
+                </td>
+
+                <td style="text-align: center;">{{ log.id }}</td>
+                <td style="text-align: center;">{{ log.time_event }}</td>
+                <td>
+                    <textarea type="text" value="{{ log.dogovor}}" name="dogovor">{{ log.dogovor }}</textarea>
+                </td>
+                <td>
+                    <textarea type="text" value="{{log.event }}" name="event">{{log.event }}</textarea>
+                </td>
+                <td>
+                    <textarea type="text" value="{{ log.phone }}" name="phone">{{ log.phone }}</textarea>
+                </td>
+                <td>
+                    <select name="request">
+                        <option value="{{ log.request }}">{{ log.request }}</option>
+                        <option value="да">да</option>
+                        <option value="нет">нет</option>
+                    </select>
+                </td>
+                <input type="hidden" value="{{log.operator}}" name="operator">
+                <td style="text-align: center;">{{ log.operator }}</td>
+                <td>
+                    {% if (log.operator == current_user.name and current_user.permission['edit_entry'] == "enable") or
+                    current_user.permission['admin_user'] == "enable" %}
+                    <input formaction="/update" formmethod="post" type="submit" value="Применить">
+                    {% endif %}
+                </td>
+
+            </form>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div style="color:red; text-align: center;">
+    {{ messages[0] }}
+</div>
+{% endif %}
+{% endwith %}
+<div class="form_content">
+    <form class="request_send" action="/add" method="post">
+        <input type="hidden" value="tp" name="otdel">
+        Телефон: <input width="300px" border: 1px type="text" name="phone" required>
+        <input type="submit" name="form" value="Отправить" />
+    </form>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io("/tp");
+    socket.on('connect', function () { });
+</script>
+<!-- <script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+        var socket = io.connect('http://192.168.255.56:5000/tp')
+    });
+</script> -->
+{% endblock %}

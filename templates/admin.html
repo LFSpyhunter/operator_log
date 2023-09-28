@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+{% if current_user.permission['admin_user'] == "enable" or current_user.name == 'Брянский'%}
+<div class="container">
+  <div class="title_wrapper">
+    <div>
+      <h5>Панель управления</h5>
+    </div>
+  </div>
+  <hr class="hr_journal">
+  <div class="admin-panel">
+    <div style="font-size: 12px;">
+      <h4>Удаление записи из базы:</h4>
+      <form action="/delete" method="POST">
+        <span>id :</span>
+        <input style="width: 60px;" type="text" name="id">
+        <select name="otdel">
+          <option value="it">IT отдел</option>
+          <option value="tp">Отдел ТП</option>
+        </select>
+        <input type="submit" value="Удалить">
+      </form>
+    </div>
+  </div>
+  <div>
+    <h4>Управление доступом пользователей</h4>
+    <table class="table table-sm table-striped table_admin_panel">
+      <tr>
+        <th width="2%">Фамилия</th>
+        <td>Поиск</td>
+        <td>Создание новости</td>
+        <td>Просмотр журнала IT</td>
+        <td>Просмотр журнала ТП</td>
+        <td>Просмотр журнала АТС</td>
+        <td>Редактирование журнала IT</td>
+        <td>Редактирование журнала ТП</td>
+        <td>Редактирование журнала АТС</td>
+        <td>Просмотр коммутатора</td>
+        <td>Настройка портов</td>
+        <td>Настройка коммутатора</td>
+        <td>Удаление записей</td>
+        <td>Редактирвание записей</td>
+        <td>Админ</td>
+        <td></td>
+        <td></td>
+      </tr>
+      {% for user in users %}
+      <tr>
+        <form method="POST">
+          <input type="hidden" value="{{user.id}}" name="id">
+          <th>{{user.name}}</th>
+          <td><select name="search">
+              <option value="{{ user.permission['search'] }}">{{ user.permission['search'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="create_news">
+              <option value="{{ user.permission['create_news'] }}">{{ user.permission['create_news'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="prosm_jur_it">
+              <option value="{{ user.permission['prosm_jur_it'] }}">{{ user.permission['prosm_jur_it'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="prosm_jur_tp">
+              <option value="{{ user.permission['prosm_jur_tp'] }}">{{ user.permission['prosm_jur_tp'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="prosm_jur_atc">
+              <option value="{{ user.permission['prosm_jur_atc'] }}">{{ user.permission['prosm_jur_atc'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="edit_jur_it">
+              <option value="{{ user.permission['edit_jur_it'] }}">{{ user.permission['edit_jur_it'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="edit_jur_tp">
+              <option value="{{ user.permission['edit_jur_tp'] }}">{{ user.permission['edit_jur_tp'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="edit_jur_atc">
+              <option value="{{ user.permission['edit_jur_atc'] }}">{{ user.permission['edit_jur_atc'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="prosm_switch">
+              <option value="{{ user.permission['prosm_switch'] }}">{{ user.permission['prosm_switch'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="set_port">
+              <option value="{{ user.permission['set_port'] }}">{{ user.permission['set_port'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="set_switch">
+              <option value="{{ user.permission['set_switch'] }}">{{ user.permission['set_switch'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="del_entry">
+              <option value="{{ user.permission['del_entry'] }}">{{ user.permission['del_entry'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="edit_entry">
+              <option value="{{ user.permission['edit_entry'] }}">{{ user.permission['edit_entry'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><select name="admin_user">
+              <option value="{{ user.permission['admin_user'] }}">{{ user.permission['admin_user'] }}</option>
+              <option value="enable">enable</option>
+              <option value="disable">disable</option>
+            </select>
+          </td>
+          <td><input formaction="/admin" formmethod="post" type="submit" value="Применить"></td>
+          <td><input formaction="/userdelete" formmethod="post" type="submit" value="Удалить"></td>
+        </form>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

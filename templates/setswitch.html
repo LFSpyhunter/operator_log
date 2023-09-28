@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="title_wrapper">
+        <div>
+            <h5>Настройка коммутатора</h5>
+        </div>
+
+    </div>
+    <hr class="hr_journal">
+    <div class="switch-header-info">
+        <div>
+            <form action="/getconfig" method="post">
+                Введите IP:
+                <input type="text" name="ip_switch" required>
+                <input type="submit" value="Снять настройки">
+            </form>
+        </div>
+        <div>
+            <form action="/getconfig" method="post">
+                <input type="file" name="file">
+                <input type="submit" value="Снять настройки из файла">
+            </form>
+        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div style="color:red; text-align: left; font-weight: bold;">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% if model %}
+        <div class="switch-info">
+            <span class="model-info">IP адрес: <span class="model-value" id="ip-commut">{{ip}}</span></span>
+            {% if current_user.otdel == 'IT' and connection != "" %}
+            <a href="/saveswitch"><span class="save_button">Сохраниться</span></a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% if get_config %}
+    <form style="text-align: center;" action="/tmpconfig" method="post">
+        <textarea class="form-control" name="dl_config" cols="30" rows="10">{{get_config}}</textarea>
+        Преобразовать для модели:
+        <select name="model">
+            <option value="DGS-1210-28X/ME">DGS-1210-28X/ME</option>
+            <option value="DES-3200-28">DES-3200-28</option>
+            <option value="DES-3200-28/C1">DES-3200-28/C1</option>
+            <option value="DES-3028G">DES-3028G</option>
+            <option value="DGS-3000-26TC">DGS-3000-26TC</option>
+            <option value="DES-3526">DES-3526</option>
+        </select>
+        <input name="def_en" type="checkbox" checked> с default config
+        <button type="submit" class="btn btn-primary m-2">Применить</button>
+    </form>
+    {% endif %}
+    {% if template %}
+    <form style="text-align: center;" action="/cfgdownload" method="post">
+        <textarea class="form-control" name="upl_config" cols="30" rows="15">{{template}}</textarea>
+        IP адрес:
+        <input type="text" name="ip_download" required>
+        <button type="submit" class="btn btn-primary m-2">Загрузить</button>
+    </form>
+    {% endif %}
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="tableInfoPort">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

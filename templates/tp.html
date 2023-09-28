@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h1 class="title_journal"> Журнал операторов тех. поддержки </h1>
+  <table class="table table-sm table-striped table_oper_log" id="myTable">
+    <thead>
+      <tr style="text-align: center;">
+        <td width="9%">Время</td>
+        <td width="5%">Договор</td>
+        <td>Суть проблемы</td>
+        <td width="12%">Телефон</td>
+        <td width="4%">Заявка</td>
+        <td width="5%">Оператор</td>
+      </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js></script>
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function () {
+    var socket = io('/tp');
+    socket.on('for tp', function (data) {
+      console.log(data)
+      var x = document.getElementById('myTable').getElementsByTagName("tbody")[0];
+      x.innerHTML = '';
+      var i = 0
+      for (var key in data) {
+        var row = document.createElement("tr");
+        for (var item in data[key]) {
+          var td = document.createElement("td");
+          td.appendChild(document.createTextNode(data[key][item]))
+          row.appendChild(td);
+        }
+        x.appendChild(row)
+      };
+    });
+  });
+</script>
+{% endblock %}

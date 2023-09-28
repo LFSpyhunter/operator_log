@@ -1,0 +1,13 @@
+{% if system_location %}config snmp system_location {{system_location}}{% endif %}
+{% if vlans %}{% for vlan in vlans %}create vlan {{ vlan }} tag {{ vlan }}
+{% endfor %}{% endif %}
+{% if conf_vlans %}{% for conf_vlan in conf_vlans %}config vlan {{ conf_vlan }}
+{% endfor %}{% endif %}
+{% if acl %}{% for i in acl %}config access_profile profile_id 10 add access_id {{i[0]}} ip source_ip {{i[1]}} port {{i[2]}} permit
+config access_profile profile_id 20 add access_id {{i[0]}} ip source_ip 0.0.0.0 port {{i[2]}} deny
+{% endfor %}{% endif %}
+{% if igmp_member %}config igmp_snooping multicast_vlan 1500 add member_port {{ igmp_member }}{% endif %}
+{% if ports %}{% for port in ports %}conf ports {{port[0]}} state {{port[1]}}{% if port[2] %} des {{port[2]}} {% endif %}
+{% endfor %}{% endif %}
+config multicast vlan_filtering_mode all filter_unregistered_groups
+config multicast port_filtering_mode 1-28 filter_unregistered_groups

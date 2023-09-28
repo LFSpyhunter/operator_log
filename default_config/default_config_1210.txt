@@ -1,0 +1,66 @@
+enable password encryption
+enable snmp
+config vlan default delete 1-24
+config ports 1-24 state disable 
+config bandwidth_control 1-24 rx_rate 102400 tx_rate 102400
+create access_profile ip source_ip_mask 255.255.255.255 profile_id 10
+create access_profile ip source_ip_mask 0.0.0.0 profile_id 20
+create access_profile ip tcp dst_port_mask 0xFFFF profile_id 4
+config access_profile profile_id 4 add access_id 1 ip tcp dst_port 135 dst_port_mask 0xffff port 1-24 deny
+config access_profile profile_id 4 add access_id 2 ip tcp dst_port 137 dst_port_mask 0xffff port 1-24 deny
+config access_profile profile_id 4 add access_id 3 ip tcp dst_port 138 dst_port_mask 0xffff port 1-24 deny
+config access_profile profile_id 4 add access_id 4 ip tcp dst_port 139 dst_port_mask 0xffff port 1-24 deny
+config access_profile profile_id 4 add access_id 5 ip tcp dst_port 445 dst_port_mask 0xffff port 1-24 deny
+create access_profile ip udp dst_port_mask 0xFFFF profile_id 5
+config access_profile profile_id 5 add access_id 1 ip udp dst_port 135 dst_port_mask 0xffff port 1-24 deny
+config access_profile profile_id 5 add access_id 2 ip udp dst_port 137 dst_port_mask 0xffff port 1-24 deny
+config access_profile profile_id 5 add access_id 3 ip udp dst_port 138 dst_port_mask 0xffff port 1-24 deny
+config access_profile profile_id 5 add access_id 4 ip udp dst_port 139 dst_port_mask 0xffff port 1-24 deny
+config access_profile profile_id 5 add access_id 5 ip udp dst_port 445 dst_port_mask 0xffff port 1-24 deny
+config stp version rstp
+config stp fbpdu enable
+config stp ports 1-24 fbpdu disable state disable
+config stp ports 25-28 fbpdu enable state enable edge false
+enable stp
+enable loopdetect
+config loopdetect ports 1-24 state enable
+config loopdetect ports 25-28 state disable
+config traffic control 1-24 broadcast enable multicast enable action drop threshold 64
+config traffic control 25-28 broadcast disable multicast disable
+config filter dhcp_server ports 1-24 state enable
+create cpu_access_profile ethernet ethernet_type profile_id 1
+config cpu_access_profile profile_id 1 add access_id 1 ethernet ethernet_type 0x86DD port 1-28 deny
+enable cpu_interface_filtering
+enable igmp_snooping 
+enable igmp_snooping multicast_vlan
+create igmp_snooping multicast_vlan 1500 1500
+config igmp_snooping multicast_vlan 1500 state enable
+config igmp_snooping querier all state disable         
+config igmp_snooping vlanid 1500 state enable fast_leave disable report_suppression disable
+config igmp_snooping data_driven_learning vlanid 1500 state disable aged_out disable
+enable igmp_snooping forward_mcrouter_only
+config igmp_snooping multicast_vlan 1500 source_port_dynamical_learn state enable
+create mcast_filter_profile ipv4 profile_id 1 profile_name 1
+config mcast_filter_profile profile_id 1 add 238.0.0.0 238.1.1.254
+config limited_multicast_addr ports 1-24 ipv4 add profile_id 1
+config igmp_snooping multicast_vlan 1500 add source_port 25-28
+enable syslog
+create syslog host 1 ipaddress 192.168.{{net}}.252 severity all facility local0 udp_port 514  state enable 
+create syslog host 2 ipaddress 192.168.{{net}}.251 severity all facility local0 udp_port 514  state enable
+config log_save_timing time_interval 60
+config time_zone operator + hour 3 min 0
+config sntp primary 192.168.{{net}}.251 secondary 192.168.{{net}}.252 poll-interval 3600
+enable sntp
+config dst disable
+{% if system_location %}config snmp system_location {{system_location}}{% endif %}
+{% if vlans %}{% for vlan in vlans %}create vlan {{ vlan }} tag {{ vlan }}
+{% endfor %}{% endif %}
+{% if conf_vlans %}{% for conf_vlan in conf_vlans %}config vlan {{ conf_vlan }}
+{% endfor %}{% endif %}
+{% if acl %}{% for i in acl %}config access_profile profile_id 10 add access_id {{i[0]}} ip source_ip {{i[1]}} port {{i[2]}} permit
+config access_profile profile_id 20 add access_id {{i[0]}} ip source_ip 0.0.0.0 port {{i[2]}} deny
+{% endfor %}{% endif %}
+{% if igmp_member %}config igmp_snooping multicast_vlan 1500 add member_port {{ igmp_member }}{% endif %}
+{% if ports %}{% for port in ports %}conf ports {{port[0]}} state {{port[1]}}{% if port[2] %} des {{port[2]}} {% endif %}
+{% endfor %}{% endif %}
+config multicast vlan_filtering_mode all filter_unregistered_groups

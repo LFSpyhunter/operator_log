@@ -2,16 +2,17 @@
 
 {% block content %}
 <div class="column is-4 is-offset-4">
-    <h3 class="title">Регистрация</h3>
-    <div class="box">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <div style="color:red;">
-            {{ messages[0] }}.
-        </div>
-        {% endif %}
-        {% endwith %}
-        <form method="POST" action="/adduser">
+    <div style="width: 300px; margin: 100px auto; text-align: center;">
+        <h3 class="title">Регистрация</h3>
+        <div class="box">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div style="color:red;">
+                {{ messages[0] }}.
+            </div>
+            {% endif %}
+            {% endwith %}
+            <!-- <form method="POST" action="/adduser">
             <div class="field">
                 <div class="control">
                     <input class="input" type="text" name="name" placeholder="Фамилия" autofocus="">
@@ -25,7 +26,20 @@
             </div>
 
             <button class="button">Зарегистрироваться</button>
-        </form>
+        </form> -->
+            <form method="POST" action="/adduser">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="exampleInputName1" aria-describedby="emailHelp"
+                        placeholder="Фамилия" name="name">
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Пароль"
+                        name="password">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

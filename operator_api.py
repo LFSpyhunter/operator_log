@@ -15,6 +15,10 @@ log_post_args.add_argument("time_report", type=str)
 log_post_args.add_argument("after_event", type=str)
 log_post_args.add_argument("operator", type=str)
 
+switch_port_args = reqparse.RequestParser()
+switch_port_args.add_argument("ip", type=str)
+switch_port_args.add_argument("port", type=str)
+
 
 resource_fields = {'id': fields.Integer, 'time_event': fields.DateTime,  'event': fields.String, 'username_report': fields.String, 
                     'time_report': fields.String, 'after_event': fields.String, 'operator': fields.String}
@@ -49,7 +53,6 @@ class OperatorLog(Resource):
     @jwt_required()
     def get(self, log_id):
         log = OperatorLogModel.query.filter_by(id=log_id).first()
-        print(log)
         if not log:
             abort(404, message="Net takogo ID")
         return log
@@ -83,3 +86,5 @@ class OperatorLog(Resource):
 
 api.add_resource(OperatorLog, '/api/<int:log_id>')
 api.add_resource(OperatorLogAdd, '/api')
+
+

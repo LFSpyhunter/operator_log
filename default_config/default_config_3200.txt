@@ -1,0 +1,61 @@
+enable password encryption
+config vlan default delete 1-24
+config ports 1-24 state disable
+config stp fbpdu disable
+config stp ports 1-28 fbpdu disable state disable
+disable stp
+enable loopdetect
+config loopdetect ports 1-24 state enable
+config loopdetect ports 25-28 state disable
+config filter dhcp_server ports 1-24 state enable
+config filter dhcp_server ports 25-28 state disable
+config traffic control 1-24 broadcast enable multicast enable action drop threshold 64 countdown 5 time_interval 5
+enable igmp_snooping 
+create igmp_snooping multicast_vlan 1500 1500
+config igmp_snooping multicast_vlan 1500 state enable
+enable igmp_snooping multicast_vlan
+config igmp_snooping multicast_vlan 1500 add source_port 25-28
+config igmp_snooping vlan_name 1500 fast_leave disable
+config igmp_snooping data_driven_learning vlan_name 1500 aged_out enable
+config multicast port_filtering_mode 1-28 filter_unregistered_groups
+create access_profile ip tcp dst_port_mask 0xFFFF profile_id 4
+config access_profile profile_id 4 add access_id 1 ip tcp dst_port 135 port 1-28 deny
+config access_profile profile_id 4 add access_id 2 ip tcp dst_port 137  port 1-28 deny
+config access_profile profile_id 4 add access_id 3 ip tcp dst_port 138  port 1-28 deny
+config access_profile profile_id 4 add access_id 4 ip tcp dst_port 139  port 1-28 deny
+config access_profile profile_id 4 add access_id 5 ip tcp dst_port 445  port 1-28 deny
+create access_profile ip udp dst_port_mask 0xFFFF profile_id 5
+config access_profile profile_id 5 add access_id 1 ip udp dst_port 135  port 1-28 deny
+config access_profile profile_id 5 add access_id 2 ip udp dst_port 137  port 1-28 deny
+config access_profile profile_id 5 add access_id 3 ip udp dst_port 138  port 1-28 deny
+config access_profile profile_id 5 add access_id 4 ip udp dst_port 139  port 1-28 deny
+config access_profile profile_id 5 add access_id 5 ip udp dst_port 445  port 1-28 deny
+create mcast_filter_profile profile_id 1 profile_name 1
+config mcast_filter_profile profile_id 1 add 238.0.0.0-238.1.1.254
+enable syslog
+create syslog host 1 ipaddress 192.168.{{net}}.252 severity all facility local0 udp_port 514  state enable 
+create syslog host 2 ipaddress 192.168.{{net}}.250 severity all facility local0 udp_port 514  state enable
+config syslog host 1 ipaddress 192.168.{{net}}.252 severity all facility local0 udp_port 514  state enable 
+config syslog host 2 ipaddress 192.168.{{net}}.250 severity all facility local0 udp_port 514  state enable
+enable sntp
+config time_zone operator + hour 3 min 0
+config sntp primary 192.168.{{net}}.252 poll-interval 3600
+config dst disable
+create access_profile ip source_ip_mask 255.255.255.255 profile_id 10
+create access_profile ip source_ip_mask 0.0.0.0 profile_id 20
+create cpu access_profile profile_id 1 ethernet ethernet_type
+config cpu access_profile profile_id 1 add access_id 1 ethernet ethernet_type 0x86DD port 1-28 deny
+enable cpu_interface_filtering
+{% if system_location %}config snmp system_location {{system_location}}{% endif %}
+{% if vlans %}{% for vlan in vlans %}create vlan {{ vlan }} tag {{ vlan }}
+{% endfor %}{% endif %}
+{% if conf_vlans %}{% for conf_vlan in conf_vlans %}config vlan {{ conf_vlan }}
+{% endfor %}{% endif %}
+{% if acl %}{% for i in acl %}config access_profile profile_id 10 add access_id {{i[0]}} ip source_ip {{i[1]}} port {{i[2]}} permit
+config access_profile profile_id 20 add access_id {{i[0]}} ip source_ip 0.0.0.0 port {{i[2]}} deny
+{% endfor %}{% endif %}
+{% if igmp_member %}config igmp_snooping multicast_vlan 1500 add member_port {{ igmp_member }}{% endif %}
+{% if ports %}{% for port in ports %}conf ports {{port[0]}} state {{port[1]}}{% if port[2] %} des {{port[2]}} {% endif %}
+{% endfor %}{% endif %}
+config multicast vlan_filtering_mode all filter_unregistered_groups
+config multicast port_filtering_mode 1-28 filter_unregistered_groups

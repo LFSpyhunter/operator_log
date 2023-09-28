@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="title_wrapper">
+        <div>
+            <h5>Журнал операторов IT</h5>
+        </div>
+        <div class="block_button">
+            <form action="/editit" method="POST">
+                <button value="1" name="date" type="submit" class="btn-primary">Последние записи</button>
+            </form>
+            <form action="/editit" method="POST">
+                <button value="3" name="date" type="submit" class="btn-primary">Записи за сутки</button>
+            </form>
+        </div>
+    </div>
+    <hr class="hr_journal">
+    <!-- <h1 style="text-align: center; font-size: 32px;"> Журнал операторов IT</h1>
+    <center>
+        <div class="block_button">
+            <form action="/editit" method="POST">
+                <button value="1" name="date" type="submit" class="btn btn-primary">Последние 10 записей</button>
+            </form>
+            <form action="/editit" method="POST">
+                <button value="3" name="date" type="submit" class="btn btn-primary">Записи за сутки</button>
+            </form>
+        </div>
+    </center> -->
+    <table class="table table-sm table-striped table_oper_log">
+        <tr style="text-align: center;">
+            <td width="4%"></td>
+            <td width="2%">id</td>
+            <td width="9%">Время события</td>
+            <td>Событие</td>
+            <td width="5%">Кому доложил</td>
+            <td width="2%">Время восстан.</td>
+            <td>Пояснение события</td>
+            <td width="5%">Оператор</td>
+            <td width="5%"></td>
+            
+        </tr>
+        {% for log in logs%}
+        <tr>
+            <form>
+                <input type="hidden" value="{{log.id}}" name="id">
+                <input type="hidden" value="it" name="otdel">
+                <td>
+                    {% if (log.operator == current_user.name and current_user.permission['del_entry'] == "enable") or
+                    current_user.permission['admin_user'] == "enable" %}
+                    <input formaction="/delete" formmethod="post" type="submit" value="Удалить">
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">{{ log.id}}</td>
+                <td style="text-align: center;">{{ log.time_event}}</td>
+                <td><textarea type="text" value="{{log.event }}" name="event">{{log.event }}</textarea></td>
+                <td><select name="username_report">
+                        <option value="{{ log.username_report }}">{{ log.username_report }}</option>
+                        <option value="Федосеев">Федосеев</option>
+                        <option value="Понкратов">Понкратов</option>
+                        <option value="Панин">Панин</option>
+                        <option value="Кочеров">Кочеров</option>
+                        <option value="Трушин">Трушин</option>
+                        <option value="Шагалин">Шагалин</option>
+                        <option value="Брянский">Брянский</option>
+                    </select>
+                </td>
+                <td><input style="text-align: center;" type="time" value="{{ log.time_report }}" name="time_report">
+                </td>
+                <td><textarea type="text" value="{{ log.after_event }}"
+                        name="after_event">{{ log.after_event }}</textarea></td>
+                <input type="hidden" value="{{log.operator}}" name="operator">
+                <td style="text-align: center;">{{ log.operator }}</td>
+                <td>
+                    {% if (log.operator == current_user.name and current_user.permission['edit_entry'] == "enable") or
+                    current_user.permission['admin_user'] == "enable" %}
+                    <input formaction="/update" formmethod="post" type="submit" value="Применить">
+                    {% endif %}
+                </td>
+                
+            </form>
+
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div style="color:red; text-align: center;">
+    {{ messages[0] }}
+</div>
+{% endif %}
+{% endwith %}
+<!-- <p id="demo">Click me.</p> -->
+<div class="form_content">
+    <form class="request_send" action="/add" method="post">
+        <input type="hidden" value="it" name="otdel">
+        Событие: <input border: 1px type="text" name="event" required>
+        <input type="submit" value="Отправить" onclick="sendRequest()"/>
+    </form>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io("/it");
+    socket.on('connect', function() {});
+    socket.on('for_edit_it', function () {location.href = '/editit';});
+    function sendRequest() {socket.emit('my event', {data: 'Отправил сообщение'});
+    };
+
+</script>
+<!-- <script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+        var socket = io.connect('http://192.168.255.56:5000/it');
+    })
+</script> -->
+{% endblock %}
