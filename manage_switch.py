@@ -4,11 +4,13 @@ import pexpect
 import sys
 import ast
 import os
+from func import check_ip, change_date
 from jinja2 import Environment, FileSystemLoader
-from operator_api import switch_port_args
+from operator_api import switch_port_args, abort
 from flask import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import current_user
 from func_for_switch import define_model, define_state_ports, define_vlans, get_id_abon
+import requests
 
 
 SWITCH = {}
@@ -16,19 +18,13 @@ SWITCH = {}
 
 class Switch:
     def __init__(self):
-        self.connection = ""
-        if request.form.get("ip_switch"):
-            self.ip = request.form.get("ip_switch")
-            try:
-                self.model = define_model(self.ip)
-            except:
-                self.set_cmd_through_telnet("enable snmp")
-                self.model = define_model(self.ip)
-        else:
-            self.ip = ""
-            self.model = ""
+        self.connection = ""      
+        self.ip = ""
+        self.model = ""
 
-    def view(self):
+    def view(self, ip):
+        self.ip = ip
+        self.model = define_model(ip)
         ports_info_dict = {"state": {1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "", 9: "", 10: "", 11: "", 12: "", 13: "", 14: "", 15: "", 16: "", 17: "", 18: "", 19: "", 20: "", 21: "", 22: "", 23: "", 24: "", 25: "", 26: "", 27: "", 28: ""},
                            "link": {1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "", 9: "", 10: "", 11: "", 12: "", 13: "", 14: "", 15: "", 16: "", 17: "", 18: "", 19: "", 20: "", 21: "", 22: "", 23: "", 24: "", 25: "", 26: "", 27: "", 28: ""},
                            "speed": {1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: "", 8: "", 9: "", 10: "", 11: "", 12: "", 13: "", 14: "", 15: "", 16: "", 17: "", 18: "", 19: "", 20: "", 21: "", 22: "", 23: "", 24: "", 25: "", 26: "", 27: "", 28: ""},
@@ -61,72 +57,60 @@ class Switch:
     def port_info(self):
         args = switch_port_args.parse_args()
         result = {}
-        result_out = {}
         port = args['port']
-        cmds = {'acl10': f'show conf cur inc "port {port} permit" ', 'acl20': f'show conf cur inc "port {port} deny" ', 'mac': f'show fdb port {port}',
-                'diag': f'cable_diag ports {port}'}
-        cmds_dgs_1210 = {'acl10': f'show conf cur inc "port {port} permit" ', 'acl20': f'show conf cur inc "port {port} deny" ', 'mac': f'show fdb port {port}',
-                         'diag': f'cable diagnostic port {port}'}
-        if self.model[0] == "DGS-1210-28X/ME":
-            for key, value in cmds_dgs_1210.items():
-                result[key] = self.set_cmd_through_telnet(value)
-        else:
-            for key, value in cmds.items():
-                result[key] = self.set_cmd_through_telnet(value)
-        result_out['Профиль 10'] = self.get_info_from_acl_per(
-            result['acl10'].strip())
-        result_out['Профиль 20'] = self.get_info_from_acl_deny(
-            result['acl20'].strip())
-        result_out['Длинна кабеля'] = self.get_info_from_diag(result['diag'])
-        result_out['Договор'] = get_id_abon(result_out['Профиль 10'])
-        result_out['MAC адрес'] = self.get_info_from_mac(result['mac'].strip())
-        return result_out
+        request_result_acl = requests.get(f'http://192.168.255.70:9999/sw/{self.ip}/ports/{port}/acl')
+        if request_result_acl.json()['data']:
+            if request_result_acl.json()['data'][0]['ip']:
+                result['Профиль 10'] = request_result_acl.json()['data'][0]['ip']
+                # result['Договор'] = get_id_abon(result['Профиль 10'])
+            if request_result_acl.json()['data'][1]['ip']:
+                result['Профиль 20'] = request_result_acl.json()['data'][1]['ip']
+            
+        request_result_full = requests.get(f'http://192.168.255.70:9999/sw/{self.ip}/ports/{port}')
+        try:
+            result['Длинна кабеля'] = ['Пара: {} статус: {} длина: {}'.format(i['pair'],i['state'],i['len'] ) for i in request_result_full.json()['data'][0]['cable']]
+        except:
+            result['Длинна кабеля'] = "не показывает"
+        
+        request_result_mac = requests.get(f'http://192.168.255.70:9999/sw/{self.ip}/ports/{port}/mac')
+        if request_result_mac.json()['data']:
+            result['MAC адрес'] = request_result_mac.json()['data'][0]['mac']
+        print(result)
+        return result
 
     def set_port(self):
-        port = request.form.get("port")
-        state = request.form.get("set_port")
-        vlan_id = request.form.get("id_vlan")
-        vlan_action = request.form.get("set_vlan")
-        descrip = request.form.get("descrip")
-        acl = request.form.get("acl")
-        acl_action = request.form.get("set_acl")
-        igmp = request.form.get("set_igmp")
-        igmp_profile = request.form.get("igmp_profile")
-        if state:
-            state_port = f'conf ports {port} state {state}'
-            self.set_cmd_through_telnet(state_port)
-        if vlan_id:
-            if vlan_action == 'add':
-                vlan_port = f'conf vlan {vlan_id} {vlan_action} unt {port}'
-            else:
-                vlan_port = f'conf vlan {vlan_id} {vlan_action} {port}'
-            self.set_cmd_through_telnet(vlan_port)
-        if descrip:
-            desc_port = f'conf ports {port} desc {descrip}'
-            self.set_cmd_through_telnet(desc_port)
-        if acl:
-            if acl_action == 'add':
-                acl_port = [f'config access_profile profile_id 10 {acl_action} access_id {port} ip source_ip {acl} port {port} permit',
-                            f'config access_profile profile_id 20 {acl_action} access_id {port} ip source_ip 0.0.0.0 port {port} deny']
-            else:
-                acl_port = [f'config access_profile profile_id 10 {acl_action} access_id {port}',
-                            f'config access_profile profile_id 20 {acl_action} access_id {port}']
-            for cmd in acl_port:
-                self.set_cmd_through_telnet(cmd)
-        if igmp_profile:
-            if self.model[0] == "DES-3526":
-                pass
-            else:
-                if igmp == 'add':
-                    igmp_enable = [f'config igmp_snooping multicast_vlan 1500 {igmp} member_port {port}',
-                                   f'config limited_multicast_addr ports {port} {igmp} profile_id {igmp_profile}']
-                    self.set_cmd_through_telnet(igmp_enable)
+        if current_user.permission['admin_user'] == "enable" or current_user.permission['set_port'] == "enable":
+            port = request.form.get("port")
+            state = request.form.get("set_port")
+            vlan_id = request.form.get("id_vlan")
+            vlan_action = request.form.get("set_vlan")
+            descrip = request.form.get("descrip")
+            acl = request.form.get("acl")
+            acl_action = request.form.get("set_acl")
+            if state:
+                state_port = f'conf ports {port} state {state}'
+                self.set_cmd_through_telnet(state_port)
+            if vlan_id:
+                if vlan_action == 'add':
+                    vlan_port = f'conf vlan {vlan_id} {vlan_action} unt {port}'
                 else:
-                    igmp_enable = [f'config igmp_snooping multicast_vlan 1500 {igmp} member_port {port}',
-                                   f'config limited_multicast_addr ports {port} {igmp} profile_id {igmp_profile}']
-                for cmd in igmp_enable:
+                    vlan_port = f'conf vlan {vlan_id} {vlan_action} {port}'
+                self.set_cmd_through_telnet(vlan_port)
+            if descrip:
+                desc_port = f'conf ports {port} desc {descrip}'
+                self.set_cmd_through_telnet(desc_port)
+            if acl:
+                if acl_action == 'add':
+                    acl_port = [f'config access_profile profile_id 10 {acl_action} access_id {port} ip source_ip {acl} port {port} permit',
+                                f'config access_profile profile_id 20 {acl_action} access_id {port} ip source_ip 0.0.0.0 port {port} deny']
+                else:
+                    acl_port = [f'config access_profile profile_id 10 {acl_action} access_id {port}',
+                                f'config access_profile profile_id 20 {acl_action} access_id {port}']
+                for cmd in acl_port:
                     self.set_cmd_through_telnet(cmd)
-        return self.view()
+            return self.view(self.ip)
+        else:
+            return abort(401)
 
     def set_cmd_through_telnet(self, cmd):
         if self.connection:
@@ -167,17 +151,17 @@ class Switch:
         return connection
 
     def logs(self):
-        cmd = "show log"
-        log = self.set_cmd_through_telnet(cmd)
-        log = log.replace('\n\r                          ', '')
-        log = log.replace('\n', '')
-        return render_template('switchlog.html', log=log)
+        request_result_logs = requests.get(f'http://192.168.255.70:9999/sw/{self.ip}/log')
+        logs = request_result_logs.json()['data']
+        for i in logs:
+            i["timestamp"] = change_date(i["timestamp"])
+        return render_template('switchlog.html', logs=logs)
 
     def save(self):
         cmd = "save"
         self.set_cmd_through_telnet(cmd)
         flash("Успешно")
-        return self.view()
+        return self.view(self.ip)
 
     def get_info_from_acl_per(self, value):
         try:
@@ -213,26 +197,26 @@ class Switch:
         get_config = ""
         return render_template('setswitch.html', model=self.model, ip=self.ip, get_config=get_config)
 
-    def download(self):
-        self.config = {}
-        _, _, net, _ = self.ip.split('.')
-        self.config = {'ip': '', 'net' : '', 'vlans' : [], 'conf_vlans' : [], 'acl' : [], 'ports' : [], 'bandwith' : []}
-        self.config['ip'] = self.ip
-        self.config['net'] = net
-        self.regex_list = {'system_location': "config snmp system_location ([^>]+)",
-                           'vlans': "create vlan (\S+)",
-                           'igmp_member': "1500 \D+ member\S+ (\S+)",
-                           'acl': "config access_profile profile_id 10 \D+ access_id (\d+) \D+ source_ip (\S+).* port (\d+)",
-                           'conf_vlans': "config vlan (\S+ add \S+ \S+)",
-                           'bandwith': "config bandwidth_control (\S+) rx_rate (\S+) tx_rate (\S+)"}
-        for i in range(1, 25):
-            port = define_state_ports(self.ip, i)
-            self.config['ports'].append([i, self.state_port(port[0]), port[4]])
-        result = self.connect_switch(self.ip)
-        result = result.replace('\r', '').split('\n')
-        for line in result:
-            self.get_regex_value(line)
-        return render_template('setswitch.html', model=self.model, ip=self.ip, get_config=self.config)
+    # def download(self):
+    #     self.config = {}
+    #     _, _, net, _ = self.ip.split('.')
+    #     self.config = {'ip': '', 'net' : '', 'vlans' : [], 'conf_vlans' : [], 'acl' : [], 'ports' : [], 'bandwith' : []}
+    #     self.config['ip'] = self.ip
+    #     self.config['net'] = net
+    #     self.regex_list = {'system_location': "config snmp system_location ([^>]+)",
+    #                        'vlans': "create vlan (\S+)",
+    #                        'igmp_member': "1500 \D+ member\S+ (\S+)",
+    #                        'acl': "config access_profile profile_id 10 \D+ access_id (\d+) \D+ source_ip (\S+).* port (\d+)",
+    #                        'conf_vlans': "config vlan (\S+ add \S+ \S+)",
+    #                        'bandwith': "config bandwidth_control (\S+) rx_rate (\S+) tx_rate (\S+)"}
+    #     for i in range(1, 25):
+    #         port = define_state_ports(self.ip, i)
+    #         self.config['ports'].append([i, self.state_port(port[0]), port[4]])
+    #     result = self.connect_switch(self.ip)
+    #     result = result.replace('\r', '').split('\n')
+    #     for line in result:
+    #         self.get_regex_value(line)
+    #     return render_template('setswitch.html', model=self.model, ip=self.ip, get_config=self.config)
 
     def get_regex_value(self, line):       
         line = line.replace('\n', "")
@@ -261,8 +245,11 @@ class Switch:
                         self.config[key].append(
                             [match.groups()[0], match.groups()[1], match.groups()[2]])
 
-    def download_from_file(self):
-        self.file = request.form.get("file")
+    def download_from_file(self, ip):
+        self.ip = check_ip(ip)
+        if not self.ip:
+            flash("Некорректный IP")
+            return redirect("/setswitch", 302)
         self.regex_list = {'system_location': "config snmp system_location ([^>]+)",
                            'vlans': "create vlan (\S+)",
                            'igmp_member': "1500 \D+ member\S+ (\S+)",
@@ -271,7 +258,7 @@ class Switch:
                            'conf_vlans': "config vlan (\S+ add \S+ \S+)",
                            'ip': "config ipif .* ipaddress (\S+)/"}
         self.config = {'ip': '', 'net' : '', 'vlans' : [], 'conf_vlans' : [], 'acl' : [], 'ports' : []}
-        with open('/tftp/{}'.format(self.file), 'r') as h:
+        with open('/home/Braa/sw-backup/{}.cfg'.format(self.ip), 'r') as h:
             for line in h:
                 self.get_regex_value(line)
         _, _, net, _ = self.config['ip'].split('.')
@@ -391,7 +378,12 @@ def switch_view():
     if request.method == "POST":
         global SWITCH
         SWITCH[f'{current_user.name}'] = Switch()
-        return SWITCH[f'{current_user.name}'].view()
+        ip = request.form.get("ip_switch")
+        ip = check_ip(ip)
+        if not ip:
+            flash("Некорректный IP")
+            return redirect("/switch", 302)
+        return SWITCH[f'{current_user.name}'].view(ip)
     else:
         return render_template('switch.html', ports=ports_info_dict, model=model, ip=ip)
 
@@ -406,13 +398,13 @@ def port_info():
 
 def get_config():
     ip = request.form.get("ip_switch")
-    file = request.form.get("file")
+    # file = request.form.get("file")
     global SWITCH
     SWITCH[f'{current_user.name}'] = Switch()
     if ip:
-        return SWITCH[f'{current_user.name}'].download()
-    elif file:
-        return SWITCH[f'{current_user.name}'].download_from_file()
+        return SWITCH[f'{current_user.name}'].download_from_file(ip)
+    # elif file:
+    #     return SWITCH[f'{current_user.name}'].download_from_file()
     else:
         flash("Что-то пошло не так")
         return redirect("/setswitch")
@@ -454,7 +446,8 @@ def upload_config():
 
 
 def switch_refresh():
-    return SWITCH[f'{current_user.name}'].view()
+    ip = SWITCH[f'{current_user.name}'].ip
+    return SWITCH[f'{current_user.name}'].view(ip)
 
 
 def switch_log():

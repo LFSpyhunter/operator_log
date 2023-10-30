@@ -7,6 +7,7 @@ from sqlalchemy import or_
 from operator_api import log_post_args, abort
 from models import OperatorLogModel, OperatorLogModelTp, OperatorLogModelATC, User, db
 from flask_jwt_extended import create_access_token
+from func_for_switch import define_model
 from operator_logs import app
 import requests
 
@@ -19,7 +20,7 @@ def edit_it():
         if request.method == "POST":
             date = request.form.get('date')
             if date == "1":
-                logs = OperatorLogModel.query[-10:]
+                pass
             else:
                 date_start = datetime.strptime("{} 00:00".format(
                     datetime.today().strftime('%Y-%m-%d')), "%Y-%m-%d %H:%M") - timedelta(days=1)
@@ -51,10 +52,65 @@ def edit_tp():
 def inko_api():
      sw_info = {}
      if request.method == "POST":
-        sw= request.form.get('sw')
+        ip = request.form.get('sw')
         port = request.form.get('port')
-        request_result = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}')
-        sw_info = request_result.json()['data'][0]
+        get_info = request.form.get('get_info')
+        sw = check_ip(ip)
+        if not sw:
+            flash("Некорректный IP")
+            return redirect("/inkoapi", 302)
+        result = check_current_date(port, get_info)
+        if not result[0]:
+            flash(f"{result[1]}")
+            return redirect("/inkoapi", 302)
+        sw_info['switch'] = {"ip": sw, "port" : port}
+        try:
+            if get_info == "full":
+                model, _, _ = define_model(sw)
+                sw_info["model"] = model
+                request_result_full = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}')
+                request_result_mac = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/mac')
+                sw_info["port_info"] = request_result_full.json()['data'][0]
+                sw_info["mac"] = request_result_mac.json()['data']
+                request_result_acl = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/acl')
+                sw_info["acl"] = request_result_acl.json()['data']
+                request_result_error = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/counters')
+                sw_info["port_counters"] = request_result_error.json()['data']
+                request_result_linkcount = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/linkdowncount')
+                sw_info["linkcount"] = request_result_linkcount.json()['data']
+            if get_info == "mac":
+                request_result_mac = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/mac')
+                sw_info["mac"] = request_result_mac.json()['data']
+            if get_info == "log":
+                request_result_log = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/log')
+                sw_info["log"] = request_result_log.json()['data']
+                for i in sw_info["log"]:
+                    i["timestamp"] = change_date(i["timestamp"])
+            if get_info == "acl":
+                request_result_acl = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/acl')
+                sw_info["acl"] = request_result_acl.json()['data']
+            if get_info == "ddm": 
+                request_result_ddm = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/ddm')
+                sw_info["ddm"] = request_result_ddm.json()['data']
+            if get_info == "error":
+                request_result_error = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/counters')
+                sw_info["port_counters"] = request_result_error.json()['data']
+            if get_info == "linkcount":
+                request_result_linkcount = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/linkdowncount')
+                sw_info["linkcount"] = request_result_linkcount.json()['data']
+            if get_info == "freeports":
+                request_result_linkcount = requests.get(f'http://192.168.255.70:9999/sw/{sw}/freeports')
+                sw_info["freeports"] = request_result_linkcount.json()['data']
+            if get_info == "clear":
+                requests.delete(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/counters')
+                request_result_error = requests.get(f'http://192.168.255.70:9999/sw/{sw}/ports/{port}/counters')
+                sw_info["port_counters"] = request_result_error.json()['data']
+        except:
+            flash("Не получилось обработать данные")
+            app.logger.warning(f"Не получилось обработать запрос от {current_user.name} где IP: {ip}, port: {port} infa: '{get_info}'")
+            return redirect("/inkoapi", 302)
+        app.logger.info(
+                f"Поступил запрос от {current_user.name} где IP: {sw}, port: {port} infa: '{get_info}' и получен ответ {sw_info}")
      return render_template('inkoapi.html', inko = sw_info)
 
 def edit_atc():
@@ -425,5 +481,65 @@ def set_user_settings():
         user.settings['posts_kol'] = kolvo
         flag_modified(user, "settings")
         db.session.commit()
-    return redirect("/")
+    return redirect("/editit")
 
+def check_current_date(port, get_info):
+    get_info_abon = ["full", "log", "clear", "error"]
+    get_info_magistr = ["log", "ddm", "clear", "error"]
+    get_info_mont = ["freeports"]
+    get_info_list = get_info_abon + get_info_magistr + get_info_mont
+    if get_info not in get_info_list:
+        return False, "Нет такого запроса"
+    if port:
+        if  0 < int(port) < 29:
+            if get_info in get_info_abon and 0 < int(port) < 25:
+                return True, "Все верно"
+            elif get_info in get_info_magistr and 24 < int(port) < 29:
+                return True, "Все верно"
+            else:
+                return False, "Запрос неккоректен"
+        else:
+            return False, "Неккоректный порт"
+    else:
+        if get_info in get_info_mont:
+            return True, "Все верно"
+        else:
+            return False, "Введите порт"
+
+def check_ip(ip):
+    ip_net_list = ["47", "49", "57", "58", "59", "60", "90"]
+    if ip.count('.') == 3:
+        a, b, net, ip = ip.split(".")
+        if net in ip_net_list:
+            if 1 < int(ip) < 250:
+                return f'192.168.{net}.{ip}'
+            else:
+                return False
+        else:
+            return False
+    elif ip.count('.') == 1:
+        net, ip = ip.split(".")
+        if net in ip_net_list:
+            if 1 < int(ip) < 250:
+                return f'192.168.{net}.{ip}'
+            else:
+                return False
+        else:
+            return False
+    else:
+        return False
+
+def change_date(date):
+    date = date.split("T")
+    time, _ = date[1].split(".")
+    time = time.split(":")
+    time[0] = str(int(time[0]) + 3)
+    if int(time[0]) > 23:
+        time[0] = str(int(time[0]) - 24)
+    date = f'{date[0]} {":".join(time)}'
+    return date
+
+def logs_app():
+    with open('operators.log', 'r') as h:
+            date = h.read()
+    return render_template('logs.html', date=date)

@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="column is-4 is-offset-4">
-    <div style="width: 300px; margin: 100px auto; text-align: center;">
+    <div style="width: 300px; margin: 10px auto; text-align: center;">
         <h3 class="title">Информация о порте</h3>
         <div class="box">
             {% with messages = get_flashed_messages() %}
@@ -12,77 +12,215 @@
             </div>
             {% endif %}
             {% endwith %}
-            <!-- <form method="POST" action="/adduser">
-            <div class="field">
-                <div class="control">
-                    <input class="input" type="text" name="name" placeholder="Фамилия" autofocus="">
-                </div>
-            </div>
-
-            <div class="field">
-                <div class="control">
-                    <input class="input" type="password" name="password" placeholder="Пароль">
-                </div>
-            </div>
-
-            <button class="button">Зарегистрироваться</button>
-        </form> -->
             <form method="POST" action="/inkoapi">
                 <div class="mb-3">
-                    <input type="text" class="form-control" id="exampleInputName1" aria-describedby="emailHelp"
-                        placeholder="Коммутатор" name="sw" required>
+                    <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Коммутатор"
+                        name="sw" value="{% if inko %}{{ inko['switch']['ip'] }}{% endif %}" required>
                 </div>
                 <div class="mb-3">
-                    <input type="text" class="form-control" id="exampleInputName1" aria-describedby="emailHelp"
-                        placeholder="Порт" name="port">
+                    <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Порт"
+                    value="{% if inko %}{{ inko['switch']['port'] }}{% endif %}" name="port">
                 </div>
-
-                <button type="submit" class="btn btn-primary">Получить</button>
+                <div>
+                    <select class="form-select mb3" name="get_info"> 
+                        <option value="full"> Полная информация</option>
+                        <option value="log">Лог порта</option>
+                        <option value="ddm">DDM</option>
+                        <option value="clear">Очистить ошибки</option>
+                        <option value="error">Ошибки</option>
+                        <option value="freeports">Свободные порты</option>
+                    </select>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button type="submit" class="btn btn-primary">Получить</button> <a href="#" onclick="location.reload(); return false;" class="btn btn-primary">Обновить</a>
+                </div>
             </form>
 
-
         </div>
+    </div>
+    <div style="margin: 10px auto;">
         {% if inko %}
-        <style>
-            li {
-                list-style-type: none;
-                /* Убираем маркеры */
-            }
-
-            ul {
-                margin-left: 0;
-                /* Отступ слева в браузере IE и Opera */
-                padding-left: 0;
-                /* Отступ слева в браузере Firefox, Safari, Chrome */
-            }
-        </style>
-        <div style="text-align: left;">
-            <ul>
-                <li>Порт: <b>{{ inko['port'] }}</b></li>
-                <li>Тип порта: <b>{{ inko['type'] }}</b></li>
-                <li>Статут порта:
-                    {% if inko['state'] %}
-                    <span style="color: green;">Enable</span>
-                    {% else %}
-                    <span style="color: red;">Disabled</span>
-                    {% endif %}
-                </li>
-                <li>Скорость порта: <b>{{ inko['speed'] }}</b></li>
-                <li>Линк:
-                    {% if inko['link'] %}
-                    <span style="color: green;">UP</span>
-                    {% else %}
-                    <span style="color: red;">Down</span>
-                    {% endif %}
-                </li>
-                <li>Скорость на порту: <b>{{ inko['status'] }}</b></li>
-                <li>Описание: <b>{{ inko['desc'] }}</b></li>
-                <li>Диагностика кабеля: <br/> <b>{{ inko['cable'] }}</b></li>
-
-            </ul>
-        </div>
+        <table class="table table-sm table-striped">
+            <tbody>
+                {% if inko["port_info"] %}
+                <tr>
+                    <td style="text-align: right;">
+                        Модель:
+                    </td>
+                    <td style="text-align: left;">
+                        <b>{{ inko["model"] }}</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        Статус порта:
+                    </td>
+                    <td style="text-align: left;">
+                        {% if inko["port_info"]['state'] %}
+                        <span style="color: green;">Enable</span>
+                        {% else %}
+                        <span style="color: red;">Disabled</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        Порт в:
+                    </td>
+                    <td style="text-align: left;">
+                        <b>{{ inko["port_info"]['speed'] }}</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        Линк:
+                    </td>
+                    <td style="text-align: left;">
+                        {% if inko["port_info"]['link'] %}
+                        <span style="color: green;">UP</span>
+                        {% else %}
+                        <span style="color: red;">Down</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        Скорость на порту:
+                    </td>
+                    <td style="text-align: left;">
+                        <b>{{ inko["port_info"]['status'] }}</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        Описание:
+                    </td>
+                    <td style="text-align: left;">
+                        <b>{{ inko["port_info"]['desc'] }}</b>
+                    </td>
+                </tr>
+                {% if inko["port_info"]['cable'] %}
+                <tr>
+                    <td style="text-align: right;">
+                        Диагностика кабеля:
+                    </td>
+                    <td style="text-align: left;">
+                        {% for cable_pair in inko["port_info"]['cable'] %}
+                        Пара: <b>{{ cable_pair['pair']}}</b> статус: <b>{{ cable_pair['state']}}</b> длина: <b>{{ cable_pair['len']}}</b> <br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if inko['mac'] %}
+                <tr>
+                    <td style="text-align: right; width: 40%">
+                        MAC адрес:
+                    </td>
+                    <td style="text-align: left;">
+                        {% for mac_id in inko['mac'] %}
+                        <!-- Vlan: <b>{{ mac_id['vid'] }}</b> MAC:  -->
+                        <b>{{ mac_id['mac'] }}</b> <br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% if inko['acl'] %}
+                <tr>
+                    <td style="text-align: right; width: 40%">
+                        ACL:
+                    </td>
+                    <td style="text-align: left;">
+                        {% for acl_id in inko['acl'] %}
+                        Профиль: <b>{{ acl_id['profile_id'] }}</b> IP: <b>{{ acl_id['ip'] }}</b> режим:
+                        <b>{% if acl_id['mode'] == "permit" %}
+                            <span style="color: green;">permit</span>
+                            {% else %}
+                            <span style="color: red;">deny</span>
+                            {% endif %} </b>
+                        <br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% if inko['port_counters'] %}
+                <tr>
+                    <td style="text-align: right; width: 40%">
+                        Ошибки:
+                    </td>
+                    <td style="text-align: left;">
+                        <b>{% if inko['port_counters']['rx_errors'] %}
+                            {% for error_id in inko['port_counters']['rx_errors'] %}
+                                {% if error_id['name'] and error_id['name'] == "CRC Error" %}
+                                    {{ error_id['name']}} : {{ error_id['count'] }}
+                                    <form style="display: inline; font-size: 14px;" method="POST" action="/inkoapi">
+                                        <input type="hidden" name="sw" value="{{ inko['switch']['ip'] }}">
+                                        <input type="hidden" name="port" value="{{ inko['switch']['port'] }}">
+                                        <input type="hidden" name="get_info" value="clear">
+                                        <button style="margin-left: 10px; border-radius: 5px;" type="submit">Очистить</button>
+                                    </form>
+                                {% endif %}                    
+                            {% endfor %}
+                            {% endif %}
+                        </b>
+                    </td>
+                </tr>
+                {% endif %}
+                {% if inko['linkcount'] %}
+                <tr>
+                    <td style="text-align: right; width: 40%">
+                        Up-Down за 24 часа:
+                    </td>
+                    <td style="text-align: left;">
+                        <b>{{ inko['linkcount'] }}</b>
+                    </td>
+                </tr>
+                {% endif %}
+                {% if inko['log'] %}
+                <tr>
+                    <td style="text-align: right; width: 40%">
+                        Логи:
+                    </td>
+                    <td style="text-align: left;">
+                        {% for log in inko['log'] %}
+                        <b>{{ log['timestamp']}}</b> : <b>{{ log['log_level'] }}</b> : <b>{{ log['message'] }}</b> <br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% if inko['ddm'] %}
+                <tr>
+                    <td style="text-align: right; width: 40%">
+                        DDM:
+                    </td>
+                    <td style="text-align: left;">
+                        temperature: <b>{{ inko['ddm']['temperature'] }}</b> <br> voltage: <b>{{ inko['ddm']['voltage'] }}</b><br>
+                        bias_current: <b>{{ inko['ddm']['bias_current'] }}</b> <br> tx_power: <b>{{ inko['ddm']['tx_power'] }}</b><br>
+                        rx_power: <b>{{ inko['ddm']['rx_power'] }}</b><br>
+                    </td>
+                </tr>
+                {% endif %}
+                {% if inko['freeports'] %}
+                <tr>
+                    <td style="text-align: right; width: 40%">
+                        Свободные порты
+                    </td>
+                    <td style="text-align: left;">
+                        {% for free in inko['freeports'] %}
+                        Port: <b>{{ free['port']}}</b>, state: <b>{{ free['state'] }}</b>, status: <b>{{ free['status'] }}</b>, desc: <b>{{ free['desc'] }}</b>
+                            {% if free['cable'] %}
+                            <br>
+                            {% for pair in free['cable'] %}
+                                pair: <b>{{pair['pair']}} </b>, status: <b>{{pair['state']}} </b>, len: <b>{{pair['len']}}</b><br>
+                            {% endfor %}
+                            {% endif %}</b> <br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
         {% endif %}
     </div>
-
 </div>
 {% endblock %}

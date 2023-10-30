@@ -33,11 +33,7 @@
         {% if model %}
         <div class="switch-info">
             <a href="/refresh"><span class="save_button">Обновить</span></a>
-            <!-- <span class="model-info">IP:<span class="model-value" id="ip-commut">{{ip}}</span></span>
-            <span class="model-info">Модель:<span class="model-value">{{model[0]}}</span></span>
-            <span class="model-info"> Место устан.:<span class="model-value">{{model[1]}}</span></span> <span
-                class="model-info"> FW:<span class="model-value">{{model[2]}}</span></span> -->
-            <!-- <a href="/switchlog" target="_blank"><span class="save_button">Logs</span></a> -->
+            <a href="/switchlog" target="_blank"><span class="save_button">Logs</span></a>
             {% if current_user.permission['set_port'] == "enable" %}
             <a href="/saveswitch"><span class="save_button">Сохраниться</span></a>
             {% endif %}
@@ -62,7 +58,7 @@
             {% for i in range(1,29)%}
             <tr>
                 <td>Port {{i}}</td>
-                <td {% if ports['state'][i]=="enable" %} style="color: Green" {% else %} style="color: Red" {% endif %}>
+                <td {% if ports['state'][i]=='enable' %} style="color: Green" {% else %} style="color: Red" {% endif %}>
                     {{ports['state'][i]}}</td>
                 <td {% if ports['link'][i]=="UP" %} style="color: Green" {% else %} style="color: Red" {% endif %}>
                     {{ports['link'][i]}}</td>

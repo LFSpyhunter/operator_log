@@ -1,0 +1,15 @@
+version: "1.0"
+services:
+  operlog:
+    image: lfspyhunter/operlog
+    container_name: operlog
+    hostname: operlog
+    ports:
+      - "8000:5000"
+    environment:
+      TZ: Europe/Moscow
+      LISTEN_IP: 192.168.255.70
+      LISTEN_PORT: 8000
+    volumes:
+      - /srv/tftp/backup:/backup
+      - /srv/docker/operlog/bd:/operator_log/bd

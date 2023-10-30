@@ -1,17 +1,17 @@
 /* ######################## MAIN SETTINGS CSS ######################## */
 .container {
-  width: 1366px;
+  max-width: 1366px;
 }
 
 a {
   text-decoration: none;
 }
 
-body {
+/* body {
   width: 100%;
   /* background: url(/static/img/Technologyab23.jpg) no-repeat;
-  background-size: cover;  */
-}
+  background-size: cover;  
+} */
 
 header {
   background: #060b8a;
@@ -37,7 +37,7 @@ header {
 }
 
 .logo img {
-  width: 120px;
+  width: 100px;
   margin: 5px 10px 5px 0;
 }
 
@@ -58,8 +58,9 @@ header {
 }
 
 .sign_btn {
+  position: relative;
   color: white;
-  font-size: 36px;
+  font-size: 30px;
   margin-left: 15px;
 }
 
@@ -67,10 +68,28 @@ header {
   color: #ef7f1a;
 }
 
+.burger_buttom {
+  display: none;
+}
+
 .user {
   color: #ef7f1a;
 }
-
+.user_settings {
+  color: black;
+  position: absolute;
+  background-color: white;
+  padding: 10px;
+  width: auto;
+  top: 60px;
+  right: 100px;
+  border-radius: 5px;
+  border: 2px solid #060b8a;
+  z-index: 100;
+}
+.user_settings input {
+  text-align: center;
+}
 /* новое меню*/
 .navbar {
   padding: 0px;
@@ -78,6 +97,7 @@ header {
   width: 100%;
 
 }
+
 
 .navbar a {
   margin-left: 10px;
@@ -321,4 +341,48 @@ textarea {
 
 .form-control {
   margin-top: 15px;
+}
+
+
+
+@media screen and (max-width:768px){
+  .logo {
+    margin-left: 0;
+  }
+  .logo img {
+    width: 100px;
+    margin: 0;
+  }
+  .sign_btn {
+    color: white;
+    font-size: 32px;
+    margin-left: 15px;
+  }
+  .operator_content {
+    margin-right: 0;
+
+  }
+  .navbar {
+    position: relative;
+    display: none;
+  }
+  .users_buttom {
+    display: none;
+  }
+  .nav_mobile_menu {
+    position: absolute;
+    width: 100%;
+    padding: 10px;
+    top:45px;
+    text-align: center;
+    background-color: #060b8a;
+  }
+  .nav_mobile_menu a {
+    margin-top: 25px;
+    font-size: 24px;
+    color: white;
+  }
+  .burger_buttom {
+    display: block;
+  }
 }

@@ -5,23 +5,6 @@
         <div>
             <h5>Настройка коммутатора</h5>
         </div>
-
-    </div>
-    <hr class="hr_journal">
-    <div class="switch-header-info">
-        <div>
-            <form action="/getconfig" method="post">
-                Введите IP:
-                <input type="text" name="ip_switch" required>
-                <input type="submit" value="Снять настройки">
-            </form>
-        </div>
-        <div>
-            <form action="/getconfig" method="post">
-                <input type="file" name="file">
-                <input type="submit" value="Снять настройки из файла">
-            </form>
-        </div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div style="color:red; text-align: left; font-weight: bold;">
@@ -29,6 +12,18 @@
         </div>
         {% endif %}
         {% endwith %}
+    </div>
+    <hr class="hr_journal">
+    <div class="switch-header-info">
+        <div>
+            <form action="/getconfig" method="post">
+                Введите IP:
+                <input type="text" name="ip_switch" required>
+                <input type="submit" value="Снять из backup">
+                <!-- <input type="submit" value="Снять через телнет"> -->
+               
+            </form>
+        </div>
         {% if model %}
         <div class="switch-info">
             <span class="model-info">IP адрес: <span class="model-value" id="ip-commut">{{ip}}</span></span>

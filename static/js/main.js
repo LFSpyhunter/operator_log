@@ -22,6 +22,7 @@ function show_me(port) {
     for (var key in result) {
       var row = document.createElement("tr");
       var td1 = document.createElement("td");
+      td1.setAttribute("style", "width:30%");
       td1.appendChild(document.createTextNode(key));
       var td2 = document.createElement("td");
       if (key == "Договор") {
@@ -98,14 +99,6 @@ function set_port(port) {
                         </select></td>
                     <td><input  name="acl" placeholder="Введите ACL"></td>
                 </tr>
-                <tr>
-                    <td>Мультикаст</td>
-                    <td><select name="set_igmp">
-                            <option value="en">Включить</option>
-                            <option value="dis">Выключить</option>
-                        </select></td>
-                        <td><input name="igmp_profile" placeholder="Введите multicast профиль"></td>
-                </tr>
             </tbody>
             
         </table>
@@ -153,43 +146,59 @@ function add_news() {
   };
 }
 
-function user_settings(user) {
-  var xhr = new XMLHttpRequest();
-  xhr.open( "GET", "/getsettings");
-  xhr.responseType = "json";
-  xhr.send( null );
-  // xhr.open("POST", "/getsettings");
-  // xhr.setRequestHeader("Content-Type", "application/json");
-  // var data = JSON.stringify({ user: user });
-  // xhr.responseType = "json";
-  // console.log(data);
-  // xhr.send(data);
-  var modal = document.getElementById("myModal");
-  xhr.onload = function () {
-    var result = xhr.response;
-    post_total = result["posts_kol"]
-    var x = document.getElementById("tableInfoPort");
-    x.innerHTML = `<h5>Настройки пользователя <span style="color: #ef7f1a">${user}</span></h5>
-      <div class="user_settings">
-        <form method="post" action="/setsettings">
-          <span>Количество выводимых записей</span>
-          <input style="width: 30px;" type="text" name="kolvo" value="${post_total}" required>
-          <div style="text-align: right; margin-top: 10px">
-              <button type="submit" class="btn btn-dark">Сохранить</button>
-          </div>
-        </form>
-      </div>`;
-  }; 
-  modal.style.display = "block";
-  var span_close = document.getElementsByClassName("close")[0];
-  span_close.onclick = function () {
-    modal.style.display = "none";
-  };
-  window.onclick = function (event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  };
-}
+// function user_settings(user) {
+//   var xhr = new XMLHttpRequest();
+//   xhr.open("GET", "/getsettings");
+//   xhr.responseType = "json";
+//   xhr.send(null);
+//   // xhr.open("POST", "/getsettings");
+//   // xhr.setRequestHeader("Content-Type", "application/json");
+//   // var data = JSON.stringify({ user: user });
+//   // xhr.responseType = "json";
+//   // console.log(data);
+//   // xhr.send(data);
+//   var modal = document.getElementById("myModal");
+//   xhr.onload = function () {
+//     var result = xhr.response;
+//     post_total = result["posts_kol"];
+//     var x = document.getElementById("tableInfoPort");
+//     x.innerHTML = `<h5>Настройки пользователя <span style="color: #ef7f1a">${user}</span></h5>
+//       <div class="user_settings">
+//         <form method="post" action="/setsettings">
+//           <span>Количество выводимых записей</span>
+//           <input style="width: 30px;" type="text" name="kolvo" value="${post_total}" required>
+//           <div style="text-align: right; margin-top: 10px">
+//               <button type="submit" class="btn btn-dark">Сохранить</button>
+//           </div>
+//         </form>
+//       </div>`;
+//   };
+//   modal.style.display = "block";
+//   var span_close = document.getElementsByClassName("close")[0];
+//   span_close.onclick = function () {
+//     modal.style.display = "none";
+//   };
+//   window.onclick = function (event) {
+//     if (event.target == modal) {
+//       modal.style.display = "none";
+//     }
+//   };
+// }
 
+function settings_user() {
+  var set_user = document.getElementById("user_settings");
+  if (set_user.style.display == "none") {
+    set_user.style.display = "block";
+  } else {
+    set_user.style.display = "none";
+  }
+}
+function mobile_menu() {
+  var mobile = document.getElementById("nav_mobile_menu");
+  if (mobile.style.display == "none") {
+    mobile.style.display = "block";
+  } else {
+    mobile.style.display = "none";
+  }
+}
 /* JS FOR  */

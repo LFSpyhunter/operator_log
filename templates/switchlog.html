@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <textarea rows="35">{{ log }}</textarea>
+{% for log in logs %}
+{{ log['timestamp']}} : {{ log['log_level'] }} : {{ log['message'] }}<br>
+{% endfor %}
 {% endblock %}

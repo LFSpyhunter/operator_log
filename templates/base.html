@@ -6,11 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Журнал Операторов</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brands.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/solid.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </head>
 
@@ -29,59 +32,20 @@
                 </div>
                 {% if current_user.is_authenticated %}
                 <div class="navbar">
-                    {% if current_user.permission['prosm_jur_it'] == "enable" or current_user.permission['prosm_jur_tp']
-                    ==
-                    "enable" or current_user.permission['prosm_jur_atc'] == "enable" %}
-
-                    <div class="dropdown">
-                        <button class="dropbtn"> Журналы
-                            <i class="fa fa-caret-down"></i>
-                        </button>
-                        <div class="dropdown-content">
-                            {% if current_user.permission['prosm_jur_it'] == "enable" %}
-                            <a style="margin-right: 10px;" href="{{ url_for('auth.it') }}" class="navbar-item">
-                                Операторов IT
-                            </a>
-                            {% endif %}
-                            {% if current_user.permission['prosm_jur_tp'] == "enable" %}
-                            <a style="margin-right: 10px;" href="{{ url_for('auth.tp') }}" class="navbar-item">
-                                Тех. поддержка
-                            </a>
-                            {% endif %}
-                            {% if current_user.permission['prosm_jur_atc'] == "enable" %}
-                            <a style="margin-right: 10px;" href="{{ url_for('auth.atc') }}" class="navbar-item">
-                                Операторов АТС
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
+                    {% if current_user.permission['prosm_jur_it'] == "enable" %}
+                    <a style="margin-right: 10px;" href="{{ url_for('auth.it') }}" class="navbar-item">
+                        Журнал
+                    </a>
                     {% endif %}
-                    {% if current_user.permission['edit_jur_it'] == "enable" or current_user.permission['edit_jur_tp']
-                    ==
-                    "enable" or current_user.permission['edit_jur_atc'] == "enable" %}
-                    <div class="dropdown">
-                        <button class="dropbtn"> Рекартирование журнала
-                            <i class="fa fa-caret-down"></i>
-                        </button>
-                        <div class="dropdown-content">
-                            {% if current_user.permission['edit_jur_it'] == "enable" %}
-                            <a style="margin-right: 10px;" href="{{ url_for('auth.editit') }}" class="navbar-item">
-                                Операторов IT
-                            </a>
-                            {% endif %}
-                            {% if current_user.permission['edit_jur_tp'] == "enable" %}
-                            <a style="margin-right: 10px;" href="{{ url_for('auth.edittp') }}" class="navbar-item">
-                                Тех. поддержка
-                            </a>
-                            {% endif %}
-                            {% if current_user.permission['edit_jur_atc'] == "enable" %}
-                            <a style="margin-right: 10px;" href="{{ url_for('auth.editatc') }}" class="navbar-item">
-                                Операторов АТС
-                            </a>
-                            {% endif %}
-
-                        </div>
-                    </div>
+                    {% if current_user.permission['edit_jur_it'] == "enable" %}
+                    <a style="margin-right: 10px;" href="{{ url_for('auth.editit') }}" class="navbar-item">
+                        Редактирование
+                    </a>
+                    {% endif %}
+                    {% if current_user.permission['inko_api'] == "enable" %}
+                    <a style="margin-right: 10px;" href="{{ url_for('auth.inko_api') }}" class="navbar-item">
+                        ИНКО API
+                    </a>
                     {% endif %}
                     {% if current_user.permission['prosm_switch'] == "enable" or current_user.permission['set_switch']
                     ==
@@ -93,12 +57,12 @@
                         <div class="dropdown-content">
                             {% if current_user.permission['prosm_switch'] == "enable" %}
                             <a style="margin-right: 10px;" href="{{ url_for('auth.switch') }}" class="navbar-item">
-                                Просмотр коммутатора
+                                Просмотр
                             </a>
                             {% endif %}
                             {% if current_user.permission['set_switch'] == "enable" %}
                             <a style="margin-right: 10px;" href="{{ url_for('auth.setswitch') }}" class="navbar-item">
-                                Настройка коммутатора
+                                Настройка
                             </a>
                             {% endif %}
                         </div>
@@ -111,17 +75,13 @@
                     </a>
 
                     {% endif %}
-                    <a style="margin-right: 10px;" href="{{ url_for('auth.inko_api') }}" class="navbar-item">
-                        ИНКО API
-                    </a>
-                    {% if current_user.permission['admin_user'] == "enable" or current_user.name == 'Брянский'%}
-                    <a style="margin-right: 10px;" href="{{ url_for('auth.admin') }}" class="navbar-item">
-                        Панель управления
-                    </a>
-                    {% endif %}
+
+
+
 
                 </div>
                 {% endif %}
+
                 <div class="operator_content">
                     {% if not current_user.is_authenticated %}
                     <div>
@@ -137,33 +97,111 @@
                     </div>
                     {% endif %}
                     {% if current_user.is_authenticated %}
-                    <!-- <div>
-                        <span>Пользователь:</span>
-                    </div> -->
                     <div class="user">
                         <span>{{current_user.name}}</span>
                     </div>
-                    <div>
-                        <a style="cursor: pointer;" class="navbar-item search_botton" onclick="user_settings('{{current_user.name}}')">
+                    <div class="users_buttom">
+                        <a style="cursor: pointer;" class="navbar-item search_botton" onclick="settings_user()">
                             <i class="fa fa-cog sign_btn" aria-hidden="true"></i>
                         </a>
+                        <div class="user_settings" id="user_settings" style="display: none;">
+
+
+                            {% if current_user.permission['admin_user'] == "enable" or current_user.name == 'Брянский'%}
+                            <div>
+                                <a style="margin-right: 10px;" href="{{ url_for('auth.admin') }}" class="navbar-item">
+                                    Панель управления
+                                </a>
+                            </div>
+                            <div>
+                                <a style="margin-right: 10px;" href="{{ url_for('auth.logs_app') }}"
+                                    class="navbar-item">
+                                    Посмотреть логи
+                                </a>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <b>Настройки</b>
+                            </div>
+                            <div>
+                                <form method="post" action="/setsettings">
+                                    <div style="padding: 10px;">
+                                        <span>Количество записей</span>
+                                        <input style="width: 30px; border-radius: 5px; margin-left: 5px;" type="text"
+                                            name="kolvo" value="{{ current_user.settings['posts_kol']}}" required>
+                                    </div>
+                                    <div style="text-align: center; margin-top: 10px;">
+                                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <div>
+                    <div class="users_buttom">
                         <a href="{{ url_for('auth.logout') }}">
                             <i class="fa fa-sign-out sign_btn" aria-hidden="true"></i>
                         </a>
                     </div>
+                    <div class="burger_buttom" onclick="mobile_menu()">
+                        <i class="fa fa-burger sign_btn" aria-hidden="true"></i>
+                    </div>
                 </div>
             </div>
             <div>
-                <!-- <a href="{{ url_for('auth.logout') }}" class="navbar-item">
-                            Выход
-                        </a> -->
                 {% endif %}
             </div>
         </div>
         </div>
 
+        </div>
+        <div id="nav_mobile_menu" style="display: none;" class="nav_mobile_menu">
+            {% if current_user.is_authenticated %}
+            <div>
+                {% if current_user.permission['prosm_jur_it'] == "enable" %}
+                <a style="margin-right: 10px;" href="{{ url_for('auth.it') }}" class="navbar-item">
+                    Журнал
+                </a>
+                {% endif %}
+            </div>
+            <div>
+                {% if current_user.permission['edit_jur_it'] == "enable" %}
+                <a style="margin-right: 10px;" href="{{ url_for('auth.editit') }}" class="navbar-item">
+                    Редактирование
+                </a>
+                {% endif %}
+            </div>
+            <div>
+                {% if current_user.permission['inko_api'] == "enable" %}
+                <a style="margin-right: 10px;" href="{{ url_for('auth.inko_api') }}" class="navbar-item">
+                    ИНКО API
+                </a>
+                {% endif %}
+            </div>
+            <div>
+                {% if current_user.permission['prosm_switch'] == "enable" %}
+                <a style="margin-right: 10px;" href="{{ url_for('auth.switch') }}" class="navbar-item">
+                    Просмотр коммутатора
+                </a>
+                {% endif %}
+            </div>
+            <div>
+                {% if current_user.permission['set_switch'] == "enable" %}
+                <a style="margin-right: 10px;" href="{{ url_for('auth.setswitch') }}" class="navbar-item">
+                    Настройка коммутатора
+                </a>
+                {% endif %}
+            </div>
+            <div>
+                {% if current_user.permission['search'] == "enable" %}
+                <a href="{{ url_for('main.search') }}" class="navbar-item">
+                    Поиск
+                </a>
+                {% endif %}
+            </div>
+            <div>
+                <a href="{{ url_for('auth.logout') }}">Выход</a>
+            </div>
+            {% endif %}
         </div>
     </header>
 
@@ -190,11 +228,8 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-        crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}" crossorigin="anonymous"></script>
+
 </body>
 
 </html>

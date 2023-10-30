@@ -3,7 +3,6 @@ from flask_login import login_user, logout_user, login_required, current_user
 from models import db
 import manage_switch 
 import func
-import ws
 
 
 auth = Blueprint('auth', __name__)
@@ -17,30 +16,37 @@ def index():
         return render_template('index.html')
 
 @auth.route('/inkoapi', methods=['GET','POST'])
+@login_required
 def inko_api():
     return func.inko_api()
 
 @auth.route('/it', methods=['GET','POST'])
+@login_required
 def it():
     return func.index_it()
 
 @auth.route('/tp', methods=['GET','POST'])
+@login_required
 def tp():
     return func.index_tp()
 
 @auth.route('/atc', methods=['GET','POST'])
+@login_required
 def atc():
     return func.index_atc()
 
 @auth.route('/editit', methods=['GET','POST'])
+@login_required
 def editit():
     return func.edit_it()
 
 @auth.route('/edittp', methods=['GET','POST'])
+@login_required
 def edittp():
     return func.edit_tp()
 
 @auth.route('/editatc', methods=['GET','POST'])
+@login_required
 def editatc():
     return func.edit_atc()
 
@@ -61,6 +67,7 @@ def signup():
     return render_template('singup.html')
 
 @auth.route('/admin', methods=['GET','POST'])
+@login_required
 def admin():
     return func.admin()
     
@@ -90,6 +97,7 @@ def setport():
     return manage_switch.set_port()
 
 @auth.route('/switch', methods=['GET','POST'])
+@login_required
 def switch():
     return manage_switch.switch_view()
 
@@ -113,7 +121,8 @@ def cfg_download():
 def saveswitch():
     return manage_switch.save_switch()
 
-@auth.route('/refresh', methods=['GET'])
+@auth.route('/refresh', methods=['GET','POST'])
+@login_required
 def refresh():
     return manage_switch.switch_refresh()
 
@@ -121,6 +130,10 @@ def refresh():
 def switch_log():
     return manage_switch.switch_log()
 
+@auth.route('/logs', methods=['GET'])
+@login_required
+def logs_app():
+    return func.logs_app()
 
 
 @auth.route('/logout')

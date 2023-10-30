@@ -40,6 +40,7 @@
         <td>Настройка коммутатора</td>
         <td>Удаление записей</td>
         <td>Редактирвание записей</td>
+        <td>API</td>
         <td>Админ</td>
         <td></td>
         <td></td>
@@ -127,6 +128,12 @@
               <option value="disable">disable</option>
             </select>
           </td>
+          <td><select name="inko_api">
+            <option value="{{ user.permission['inko_api'] }}">{{ user.permission['inko_api'] }}</option>
+            <option value="enable">enable</option>
+            <option value="disable">disable</option>
+          </select>
+        </td>
           <td><select name="admin_user">
               <option value="{{ user.permission['admin_user'] }}">{{ user.permission['admin_user'] }}</option>
               <option value="enable">enable</option>

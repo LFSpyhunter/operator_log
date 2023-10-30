@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import JSON
 from flask_login import UserMixin
 
 app.config['SECRET_KEY'] = 'secret-my-key-goes-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(DB_NAME)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bd/{}'.format(DB_NAME)
 db = SQLAlchemy(app)
 
 class User(UserMixin, db.Model):
@@ -23,7 +23,6 @@ class OperatorLogModel(db.Model):
     username_report = db.Column(db.String(25), default="-----")
     time_report = db.Column(db.String(15))
     after_event = db.Column(db.String(300), default="")
-    otdel = db.Column(db.String(50))
     operator = db.Column(db.String(25))
 
 class OperatorLogModelTp(db.Model):
@@ -34,7 +33,6 @@ class OperatorLogModelTp(db.Model):
     event = db.Column(db.String(300), default="")
     phone = db.Column(db.String(15), default="")
     request = db.Column(db.String(300), default="нет")
-    otdel = otdel = db.Column(db.String(50))
     operator = db.Column(db.String(25))
 
 class OperatorLogModelATC(db.Model):
@@ -44,7 +42,6 @@ class OperatorLogModelATC(db.Model):
     username_report = db.Column(db.String(25), default="-----")
     time_report = db.Column(db.String(15))
     after_event = db.Column(db.String(300), default="")
-    otdel = db.Column(db.String(50))
     operator = db.Column(db.String(25))
 
 db.create_all()

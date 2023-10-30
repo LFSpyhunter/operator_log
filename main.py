@@ -3,11 +3,6 @@ import func
 
 main = Blueprint('main', __name__)
 
-
-@main.route('/site')
-def site():
-    return render_template('site.html')
-
 @main.route('/add', methods=['POST'])
 def add():
     return func.add()
